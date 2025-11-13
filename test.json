@@ -1,0 +1,47 @@
+{
+  "vite": {
+    "name": "vite",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "name": "@types/three --save-dev",
+        "interactive": false
+      },
+      {
+        "name": "@react-three/fiber",
+        "interactive": false
+      },
+      {
+        "name": "gsap",
+        "interactive": false
+      },
+      {
+        "name": "create-vite@latest my-app",
+        "interactive": true
+      }
+    ]
+  },
+
+  "next": {
+    "name": "next",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "name": "three --save-dev",
+        "interactive": false
+      },
+      {
+        "name": "@react-three/drei",
+        "interactive": false
+      },
+      {
+        "name": "framer-motion",
+        "interactive": false
+      },
+      {
+        "name": "create-next-app@latest my-app",
+        "interactive": true
+      }
+    ]
+  }
+}

@@ -10,7 +10,7 @@
   ],
   "license": "MIT",
   "author": "Elliot Otoijagha",
-  "type": "commonjs",
+  "type": "module",
   "main": "dist/index.js",
   "bin": {
     "npm-auto": "./dist/index.js"
