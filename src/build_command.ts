@@ -1,10 +1,4 @@
-import type { ConfigType, PackageType } from "./types/index.ts";
-
-interface BuildCommandResult {
-  name: string;
-  interactive: string[];
-  nonInteractive: string[];
-}
+import type { ConfigType, PackageType, CommandResult } from "./types/index.ts";
 
 /**
  * Build commands for each project based on its configuration.
@@ -13,7 +7,7 @@ interface BuildCommandResult {
 export function buildCommands(projects: ConfigType[]) {
   // Initialize arrays properly
 
-  const commandBank: BuildCommandResult[] = [];
+  const commandResult: CommandResult[] = [];
   for (const project of projects) {
     const { packageManager, packages } = project;
 
@@ -35,7 +29,7 @@ export function buildCommands(projects: ConfigType[]) {
     const manager =
       commands[packageManager as keyof typeof commands] || commands.npm;
 
-    const result: BuildCommandResult = {
+    const result: CommandResult = {
       name: project.name,
       interactive: [],
       nonInteractive: [],
@@ -57,17 +51,17 @@ export function buildCommands(projects: ConfigType[]) {
 
     // Add interactive packages as separate commands (sequential)
     interactive.forEach((pkg) => {
-      result.interactive.push(`${manager.run} ${pkg.name}`);
+      result.interactive.push(`${manager.run} ${pkg.command}`);
     });
 
     // Batch all non-interactive packages into ONE command
     if (nonInteractive.length > 0) {
-      const packageNames = nonInteractive.map((pkg) => pkg.name).join(" ");
+      const packageNames = nonInteractive.map((pkg) => pkg.command).join(" ");
       result.nonInteractive.push(`${manager.install} ${packageNames}`);
     }
 
-    commandBank.push(result);
+    commandResult.push(result);
   }
 
-  return commandBank;
+  return commandResult;
 }

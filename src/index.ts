@@ -3,10 +3,10 @@
 import { Command } from "commander";
 import { saveConfigPath } from "./config_path.ts";
 import { display } from "./display.ts";
-import { Orchestrator } from "./orchestrator.ts";
 import { getConfigObject } from "./config_reader.ts";
 import { buildCommands } from "./build_command.ts";
-import type { ConfigType } from "./types/index.ts";
+import type { CommandResult, ConfigType } from "./types/index.ts";
+import { orchestrator } from "./orchestrator.ts";
 
 const program = new Command();
 
@@ -23,19 +23,11 @@ program
   });
 
 program
-  .command("install <packages...>")
+  .command("install [packages...]")
   .description("Install packages")
-  .action((packages) => {
-    display(`Installing packages... ${packages.join(", ")}`, "info");
-
-    //Getting package installation commands
-    getConfigObject(packages).then((config: ConfigType[]) => {
-      if (!config[0]) {
-        display("No configuration found", "error");
-      }
-      const commands = buildCommands(config);
-      console.log(commands);
-    });
+  .option("-p, --pkg-json", "Install packages from package.json")
+  .action((packages, options) => {
+    orchestrator("install", packages, options);
   });
 
 program.parse();

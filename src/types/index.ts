@@ -1,10 +1,16 @@
 export interface ConfigType {
   name: string;
   packageManager: string;
-  packages: { name: string; interactive: boolean }[];
+  packages: { command: string; interactive: boolean }[];
 }
 
 export interface PackageType {
-  name: string;
+  command: string;
   interactive: boolean;
+}
+
+export interface CommandResult {
+  name: string;
+  interactive: string[];
+  nonInteractive: string[];
 }

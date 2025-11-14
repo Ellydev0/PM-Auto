@@ -4,19 +4,19 @@
     "packageManager": "npm",
     "packages": [
       {
-        "name": "@types/three --save-dev",
+        "command": "@types/three --save-dev",
         "interactive": false
       },
       {
-        "name": "@react-three/fiber",
+        "command": "@react-three/fiber",
         "interactive": false
       },
       {
-        "name": "gsap",
+        "command": "gsap",
         "interactive": false
       },
       {
-        "name": "create-vite@latest my-app",
+        "command": "create-vite@latest my-app",
         "interactive": true
       }
     ]
@@ -27,19 +27,19 @@
     "packageManager": "npm",
     "packages": [
       {
-        "name": "three --save-dev",
+        "command": "three --save-dev",
         "interactive": false
       },
       {
-        "name": "@react-three/drei",
+        "command": "@react-three/drei",
         "interactive": false
       },
       {
-        "name": "framer-motion",
+        "command": "framer-motion",
         "interactive": false
       },
       {
-        "name": "create-next-app@latest my-app",
+        "command": "create-next-app@latest my-app",
         "interactive": true
       }
     ]
