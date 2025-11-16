@@ -1,0 +1,83 @@
+{
+  "vite": {
+    "name": "vite",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "@types/three --save-dev",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false
+      },
+      {
+        "command": "gsap",
+        "interactive": false
+      },
+      {
+        "command": "create-vite@latest my-app",
+        "interactive": true
+      }
+    ]
+  },
+
+  "next": {
+    "name": "next",
+    "packageManager": "pnpm",
+    "packages": [
+      {
+        "command": "three --save-dev",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/drei",
+        "interactive": false
+      },
+      {
+        "command": "framer-motion",
+        "interactive": false
+      },
+      {
+        "command": "create-next-app@latest my-app",
+        "interactive": true
+      }
+    ]
+  },
+  "test": {
+    "name": "test",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "three",
+        "interactive": false
+      },
+      {
+        "command": "gsap",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false
+      }
+    ]
+  },
+  "test2": {
+    "name": "test2",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "@react-three/drei",
+        "interactive": false
+      },
+      {
+        "command": "framer-motion",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/postprocessing",
+        "interactive": false
+      }
+    ]
+  }
+}
