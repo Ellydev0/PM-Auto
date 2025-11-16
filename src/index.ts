@@ -26,8 +26,20 @@ program
     "-A, --add-command <command>",
     "Add a custom command to all installation commands from config file",
   )
+  .option("-D, --dry-run", "Dry run - Display commands before execution")
   .action((packages, options) => {
     orchestrator("install", packages, options);
+  });
+
+program
+  .command("uninstall <packages...>")
+  .description("Uninstall packages")
+  .option(
+    "-A, --add-command <command>",
+    "Add a custom command to all installation commands from config file",
+  )
+  .action((packages, options) => {
+    orchestrator("uninstall", packages, options);
   });
 
 program.parse();

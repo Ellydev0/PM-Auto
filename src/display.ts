@@ -5,22 +5,24 @@
  * @param type - The type of message to display to determine the color.
  */
 
+import chalk from "chalk";
+
 export const display = (
   text: string,
   type: "error" | "success" | "warning" | "info" | "loading" | "",
 ) => {
   switch (type) {
     case "error":
-      console.error(text);
+      console.error(chalk.red(text));
       process.exit(1);
     case "success":
-      console.log(text);
+      console.log(chalk.green(text));
       process.exit(0);
     case "warning":
-      console.warn(text);
+      console.warn(chalk.yellow(text));
       break;
     case "info":
-      console.info(text);
+      console.info(chalk.blue(text));
       break;
     case "loading":
       console.log(`Loading... ${text}`);

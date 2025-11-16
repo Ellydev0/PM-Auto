@@ -24,7 +24,7 @@
 
   "next": {
     "name": "next",
-    "packageManager": "yarn",
+    "packageManager": "pnpm",
     "packages": [
       {
         "command": "three --save-dev",
@@ -41,6 +41,42 @@
       {
         "command": "create-next-app@latest my-app",
         "interactive": true
+      }
+    ]
+  },
+  "test": {
+    "name": "test",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "three",
+        "interactive": false
+      },
+      {
+        "command": "gsap",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false
+      }
+    ]
+  },
+  "test2": {
+    "name": "test2",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "@react-three/drei",
+        "interactive": false
+      },
+      {
+        "command": "framer-motion",
+        "interactive": false
+      },
+      {
+        "command": "@react-three/postprocessing",
+        "interactive": false
       }
     ]
   }

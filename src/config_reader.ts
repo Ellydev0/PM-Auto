@@ -5,6 +5,7 @@ import * as fsd from "fs";
 import * as path from "path";
 import type { CommandResult, ConfigType } from "./types/index.js";
 import { display } from "./display.js";
+import { confirm } from "@inquirer/prompts";
 
 type PackageManager = "npm" | "yarn" | "pnpm";
 
@@ -76,6 +77,26 @@ export const getConfigObject = async (
         });
       });
     }
+
+    //Dry run - Display commands before execution
+    if (options.dryRun) {
+      display("Dry Run:", "info");
+      result.forEach((config) => {
+        display(`Package name -> ${config.name}`, "info");
+        config.packages.forEach((pkg) => {
+          display(`add ${pkg.command}`, "info");
+        });
+      });
+      const continueWithInstall = await confirm({
+        message: "Continue with installation?",
+        default: true,
+      });
+
+      if (!continueWithInstall) {
+        display("Installation cancelled ", "success");
+      }
+    }
+
     return result;
   } else {
     //generate command for package.json

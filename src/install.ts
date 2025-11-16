@@ -1,15 +1,16 @@
 import { execa } from "execa";
 import type { CommandResult } from "./types/index.js";
+import { display } from "./display.js";
 
-export async function runCommand(command: string) {
+async function runCommand(command: string) {
   try {
     const [commandName, ...args] = command.split(" ");
 
-    const { stdout } = await execa(commandName as string, args, {
+    await execa(commandName as string, args, {
       stdio: "inherit",
     });
   } catch (error: any) {
-    console.error("Error:", error.message);
+    display(`Error:, ${error.message}`, "error");
   }
 }
 
@@ -17,17 +18,23 @@ export async function runCommand(command: string) {
  * Takes the interactive and non interactive command from each item in the CommandResult Array
  */
 export async function install(commands: CommandResult[]) {
-  for (const command of commands) {
-    // Wait for ALL interactive commands to finish first
-    if (command.interactive) {
-      for (const interactiveCommand of command.interactive) {
-        await runCommand(interactiveCommand);
+  try {
+    for (const command of commands) {
+      // Wait for all interactive commands to finish first
+      if (command.interactive) {
+        for (const interactiveCommand of command.interactive) {
+          display(`Running command: ${interactiveCommand}`, "loading");
+          await runCommand(interactiveCommand);
+        }
+      }
+
+      // Then run non-interactive
+      if (command.nonInteractive) {
+        display(`Running command: ${command.nonInteractive[0]}`, "loading");
+        await runCommand(command.nonInteractive[0] as string);
       }
     }
-
-    // Then run non-interactive
-    if (command.nonInteractive) {
-      await runCommand(command.nonInteractive[0] as string);
-    }
+  } catch (error: any) {
+    display(`Error: ${error.message}`, "error");
   }
 }

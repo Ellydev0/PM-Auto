@@ -66,3 +66,54 @@ export function buildCommands(projects: ConfigType[]) {
 
   return commandArray;
 }
+
+export function buildUninstallCommands(projects: ConfigType[]) {
+  const commandArray: CommandResult[] = [];
+  for (const project of projects) {
+    const { packageManager, packages } = project;
+
+    const commandPrefixes = {
+      npm: {
+        install: "npm uninstall",
+      },
+      pnpm: {
+        install: "pnpm uninstall",
+      },
+      yarn: {
+        install: "yarn remove",
+      },
+    };
+
+    const manager =
+      commandPrefixes[packageManager as keyof typeof commandPrefixes] ||
+      commandPrefixes.npm;
+
+    const result: CommandResult = {
+      name: project.name,
+      interactive: [],
+      nonInteractive: [],
+    };
+
+    // Separate interactive from non-interactive packages
+    const nonInteractive: PackageType[] = [];
+    const interactive: PackageType[] = [];
+
+    if (packages) {
+      packages.forEach((pkg) => {
+        if (!pkg.interactive) {
+          nonInteractive.push(pkg);
+        }
+      });
+    }
+
+    // Batch all non-interactive packages into ONE command
+    if (nonInteractive.length > 0) {
+      const packageNames = nonInteractive.map((pkg) => pkg.command).join(" ");
+      result.nonInteractive.push(`${manager.install} ${packageNames}`);
+    }
+
+    commandArray.push(result);
+  }
+
+  return commandArray;
+}
