@@ -2,7 +2,11 @@
 
 import { Command } from "commander";
 import { saveConfigPath } from "./config_path.js";
+import { intro, outro } from "@clack/prompts";
 import { orchestrator } from "./orchestrator.js";
+import chalk from "chalk";
+
+intro(chalk.inverse(" pm-auto "));
 
 const program = new Command();
 
@@ -20,11 +24,13 @@ program
 
 program
   .command("install [packages...]")
+  .alias("add")
+  .alias("i")
   .description("Install packages")
   .option("-p, --pkg-json", "Install packages from package.json")
   .option(
     "-A, --add-command <command>",
-    "Add a custom command to all installation commands from config file",
+    "Add a custom command to all installation commands from config file"
   )
   .option("-D, --dry-run", "Dry run - Display commands before execution")
   .action((packages, options) => {
@@ -33,10 +39,12 @@ program
 
 program
   .command("uninstall <packages...>")
+  .alias("remove")
+  .alias("u")
   .description("Uninstall packages")
   .option(
     "-A, --add-command <command>",
-    "Add a custom command to all installation commands from config file",
+    "Add a custom command to all installation commands from config file"
   )
   .action((packages, options) => {
     orchestrator("uninstall", packages, options);
