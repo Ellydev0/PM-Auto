@@ -179,7 +179,7 @@ pm-auto install --add-command "--legacy-peer-deps"
 Remove packages from configured presets.
 
 ```bash
-pm-auto uninstall|u|remove [options] <packages...>
+pm-auto uninstall|un|remove [options] <packages...>
 ```
 
 **Options:**
@@ -392,7 +392,7 @@ We welcome contributions! Here's how:
 1. **Fork & clone:**
 
    ```bash
-   git clone https://github.com/your-username/pm-auto.git
+   git clone https://github.com/Ellydev0/pm-auto.git
    cd pm-auto
    npm install
    ```
