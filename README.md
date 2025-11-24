@@ -307,19 +307,40 @@ Create a JSON config file to define your tech stack presets.
 
 ### Important Notes
 
-**Using `--save-dev` with multiple packages:**
-The `--save-dev` flag only applies to the package immediately before it. To install multiple packages as dev dependencies, place `--save-dev` after all package names:
+Do not include package managers or runners inside the command field.
+The command value should contain only the package name and any optional flags. Adding `npx`, `pnpm`, `pnpm dlx`, `npm`, `yarn`, or similar tools will cause the command to fail.
+
+Flags such as `--save-dev`, `--exact`, and others are allowed. Just avoid prefixing the package name with any package manager or runner.
+
+Correct Examples
 
 ```json
-// ✅ Correct - both packages installed as dev dependencies
+{
+  "command": "shadcn@latest",
+  "interactive": false
+}
+
+{
+  "command": "shadcn@latest --save-dev",
+  "interactive": false
+}
+
 {
   "command": "@types/react @types/react-dom --save-dev",
   "interactive": false
 }
+```
 
-// ❌ Incorrect - only @types/react-dom is installed as dev dependency
+Incorrect Examples
+
+```json
 {
-  "command": "@types/react --save-dev @types/react-dom",
+  "command": "npm create shadcn@latest",
+  "interactive": false
+}
+
+{
+  "command": "pnpm create shadcn@latest",
   "interactive": false
 }
 ```
