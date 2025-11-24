@@ -14,7 +14,7 @@ type PackageManager = "npm" | "yarn" | "pnpm";
  */
 
 export function detectPackageManager(
-  projectPath: string = process.cwd()
+  projectPath: string = process.cwd(),
 ): PackageManager | void {
   // Check for lock files in order of specificity
   if (fsd.existsSync(path.join(projectPath, "pnpm-lock.yaml"))) {
@@ -39,7 +39,7 @@ export function detectPackageManager(
  */
 export const getConfigObject = async (
   packages: string[],
-  options?: any
+  options?: any,
 ): Promise<ConfigType[] | CommandResult[]> => {
   if (!options.pkgJson) {
     const configPath = getConfigPath();
@@ -49,7 +49,10 @@ export const getConfigObject = async (
     try {
       configContent = await fs.readFile(configPath as string, "utf8");
     } catch (error) {
-      display(`File not found ${error}`, "error");
+      display(
+        `File not found ${error} Try updating the config file path`,
+        "error",
+      );
     }
     const configObject = JSON.parse(configContent);
     let result: ConfigType[] = Object.values(configObject);
@@ -60,7 +63,7 @@ export const getConfigObject = async (
         if (!configObject[pkg]) {
           display(
             `Package ${pkg} not found in the configuration file`,
-            "warning"
+            "warning",
           );
         }
         return configObject[pkg];
@@ -73,9 +76,8 @@ export const getConfigObject = async (
     if (options.addCommand) {
       result.forEach((config) => {
         config.packages.forEach((pkg) => {
-          pkg.command =
-            pkg.interactive ?
-              pkg.command
+          pkg.command = pkg.interactive
+            ? pkg.command
             : pkg.command + " " + options.addCommand;
         });
       });

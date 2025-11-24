@@ -14,7 +14,7 @@ function isConfigTypeArray(value: unknown): value is ConfigType[] {
         typeof item === "object" &&
         item !== null &&
         "packages" in item &&
-        Array.isArray((item as any).packages)
+        Array.isArray((item as any).packages),
     )
   );
 }
@@ -22,12 +22,12 @@ function isConfigTypeArray(value: unknown): value is ConfigType[] {
 export const orchestrator = (
   command: string,
   packages: string[],
-  options?: any
+  options?: any,
 ) => {
   if (command === "install") {
     display(
       `Installing packages... ${options.pkgJson ? "from package.json" : (packages as string[]).join(", ")}`,
-      "info"
+      "info",
     );
 
     getConfigObject(packages, options).then(async (config) => {
@@ -52,7 +52,7 @@ export const orchestrator = (
   } else {
     display(
       `Uninstalling packages... ${(packages as string[]).join(", ")}`,
-      "info"
+      "info",
     );
 
     getConfigObject(packages, options).then(async (config) => {

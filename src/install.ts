@@ -13,15 +13,8 @@ async function runCommand(command: string, interactive: boolean = false) {
         stdio: "inherit",
       });
     } else {
-      // For non-interactive, we can try to pipe, but if it's a long running install,
-      // user might want to see output.
-      // However, to fix the "never finishes" issue which might be due to input waiting,
-      // we should probably use inherit but stop the spinner first.
-      // Or use pipe and show output on error.
-      // Let's try pipe first to keep the UI clean as requested.
-
       await execa(commandName as string, args, {
-        stdio: "pipe",
+        stdio: "inherit",
       });
     }
   } catch (error: any) {
@@ -41,9 +34,6 @@ export async function install(commands: CommandResult[]) {
       // Wait for all interactive commands to finish first
       if (command.interactive) {
         for (const interactiveCommand of command.interactive) {
-          // Interactive commands need full terminal access
-          // We don't start a spinner here, or we stop it immediately in runCommand
-          // But better to just log info
           display(`Running interactive command: ${interactiveCommand}`, "info");
           await runCommand(interactiveCommand, true);
         }

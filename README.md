@@ -418,12 +418,11 @@ Found a bug? Have a suggestion?
 ## Contributors
 
 Thank you to all the contributors who have helped make PM-Auto exist! 🎉
-Wait I'm the only one 😅🤦
-
 <!-- ALL-CONTRIBUTORS-LIST:START -->
-<!-- This section is automatically generated. Add contributors using: -->
-<!-- npx all-contributors add <username> <contribution-type> -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+[Elliot Otoijagha](https://github.com/Ellydev0)
+
+[Triumph Aidenojie](https://github.com/WebsTechne)
+
 
 Want to see your name here? Check out our [Contributing](#contributing) section!
 

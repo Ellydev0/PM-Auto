@@ -1,7 +1,7 @@
 {
   "name": "pm-auto",
-  "version": "1.0.0",
-  "description": "CLI for automated npm,yarn,pnpm package installation",
+  "version": "1.0.2",
+  "description": "A CLI tool to define and install your tech stack presets with one command.",
   "keywords": [
     "pm-auto",
     "yarn-auto",
@@ -10,6 +10,12 @@
   ],
   "license": "MIT",
   "author": "Elliot Otoijagha",
+  "contributors": [
+    {
+      "name": "Triumph Aidenojie",
+      "email": "triumphaidenojie08@gmail.com"
+    }
+  ],
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -30,7 +36,6 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
-    "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
