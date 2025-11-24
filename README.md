@@ -26,7 +26,6 @@ PM-Auto is a CLI tool that lets you define your tech stack presets once and inst
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Contributors](#contributors)
-- [License](#license)
 
 ```bash
 # Instead of this every time...
@@ -305,25 +304,6 @@ Create a JSON config file to define your tech stack presets.
 }
 ```
 
-### Important Notes
-
-**Using `--save-dev` with multiple packages:**
-The `--save-dev` flag only applies to the package immediately before it. To install multiple packages as dev dependencies, place `--save-dev` after all package names:
-
-```json
-// ✅ Correct - both packages installed as dev dependencies
-{
-  "command": "@types/react @types/react-dom --save-dev",
-  "interactive": false
-}
-
-// ❌ Incorrect - only @types/react-dom is installed as dev dependency
-{
-  "command": "@types/react --save-dev @types/react-dom",
-  "interactive": false
-}
-```
-
 **Interactive commands:**
 Set `"interactive": true` for commands that require user input during installation, such as:
 
@@ -392,7 +372,7 @@ We welcome contributions! Here's how:
 1. **Fork & clone:**
 
    ```bash
-   git clone https://github.com/your-username/pm-auto.git
+   git clone https://github.com/Ellydev0/pm-auto.git
    cd pm-auto
    npm install
    ```
@@ -406,16 +386,8 @@ We welcome contributions! Here's how:
 3. **Make changes:**
    - Write clean, readable code
    - Follow existing conventions
-   - Add tests if applicable
 
-4. **Test:**
-
-   ```bash
-   npm test
-   ```
-
-5. **Commit with conventional format:**
-
+4. **Commit with conventional format:**
    ```bash
    git commit -m "feat: add your feature"
    ```
@@ -427,7 +399,7 @@ We welcome contributions! Here's how:
    - `test:` - Tests
    - `chore:` - Maintenance
 
-6. **Push & open PR:**
+5. **Push & open PR:**
    ```bash
    git push origin feature/your-feature-name
    ```
