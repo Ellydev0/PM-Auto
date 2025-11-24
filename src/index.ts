@@ -13,11 +13,11 @@ const program = new Command();
 program
   .name("pm-auto")
   .version("1.0.0")
-  .description("CLI for automated npm,yarn,pnpm package installation");
+  .description("Automated package manager installer for npm, yarn, and pnpm");
 
 program
   .command("config <path>")
-  .description("Set the config file path")
+  .description("Set the path to the configuration file")
   .action((path) => {
     saveConfigPath(path);
   });
@@ -26,7 +26,9 @@ program
   .command("install [packages...]")
   .alias("add")
   .alias("i")
-  .description("Install packages")
+  .description(
+    "Install packages using the detected package manager (Aliases: add, i)"
+  )
   .option("-p, --pkg-json", "Install packages from package.json")
   .option(
     "-A, --add-command <command>",
@@ -41,7 +43,10 @@ program
   .command("uninstall <packages...>")
   .alias("remove")
   .alias("u")
-  .description("Uninstall packages")
+  .alias("un")
+  .description(
+    "Remove packages using the detected package manager (Aliases: remove, u, un)"
+  )
   .option(
     "-A, --add-command <command>",
     "Add a custom command to all installation commands from config file"
