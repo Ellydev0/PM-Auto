@@ -4,30 +4,39 @@
  * @param text - The message to display.
  * @param type - The type of message to display to determine the color.
  */
-
+import { log, spinner, note } from "@clack/prompts";
 import chalk from "chalk";
 
-export const display = (
-  text: string,
-  type: "error" | "success" | "warning" | "info" | "loading" | "",
-) => {
+type DisplayType = "error" | "success" | "warning" | "info" | "loading" | "";
+
+const s = spinner();
+
+export const display = (text: string, type: DisplayType) => {
   switch (type) {
     case "error":
-      console.error(chalk.red(text));
+      log.error(chalk.red(text));
       process.exit(1);
     case "success":
-      console.log(chalk.green(text));
-      process.exit(0);
+      s.stop(chalk.green(text));
+      break;
     case "warning":
-      console.warn(chalk.yellow(text));
+      log.warn(chalk.yellow(text));
       break;
     case "info":
-      console.info(chalk.blue(text));
+      log.info(chalk.blue(text));
       break;
     case "loading":
-      console.log(`Loading... ${text}`);
+      s.start(text);
       break;
     default:
-      console.log(text);
+      log.message(text);
+  }
+};
+
+export const stopSpinner = (text: string, code: number = 0) => {
+  if (code === 0) {
+    s.stop(chalk.green(text));
+  } else {
+    s.stop(chalk.red(text));
   }
 };

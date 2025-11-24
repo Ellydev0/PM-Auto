@@ -1,8 +1,9 @@
 import { buildCommands, buildUninstallCommands } from "./build_command.js";
 import { getConfigObject } from "./config_reader.js";
-import { display } from "./display.js";
+import { display, stopSpinner } from "./display.js";
 import { install } from "./install.js";
 import type { ConfigType } from "./types/index.js";
+import { outro } from "@clack/prompts";
 
 //Check if the value is an array of ConfigType objects
 function isConfigTypeArray(value: unknown): value is ConfigType[] {
@@ -13,7 +14,7 @@ function isConfigTypeArray(value: unknown): value is ConfigType[] {
         typeof item === "object" &&
         item !== null &&
         "packages" in item &&
-        Array.isArray((item as any).packages),
+        Array.isArray((item as any).packages)
     )
   );
 }
@@ -21,12 +22,12 @@ function isConfigTypeArray(value: unknown): value is ConfigType[] {
 export const orchestrator = (
   command: string,
   packages: string[],
-  options?: any,
+  options?: any
 ) => {
   if (command === "install") {
     display(
       `Installing packages... ${options.pkgJson ? "from package.json" : (packages as string[]).join(", ")}`,
-      "info",
+      "info"
     );
 
     getConfigObject(packages, options).then(async (config) => {
@@ -38,21 +39,20 @@ export const orchestrator = (
       if (isConfigTypeArray(config)) {
         const commands = buildCommands(config);
         await install(commands);
-        display("✅ Packages installed successfully", "success");
+        stopSpinner("Packages installed successfully");
         process.stdout.write("\x07");
+        outro("Done!");
       } else {
         await install(config);
 
-        display(
-          "✅ Packages from package.json installed successfully",
-          "success",
-        );
+        stopSpinner("Packages from package.json installed successfully");
+        outro("Done!");
       }
     });
   } else {
     display(
       `Uninstalling packages... ${(packages as string[]).join(", ")}`,
-      "info",
+      "info"
     );
 
     getConfigObject(packages, options).then(async (config) => {
@@ -64,7 +64,8 @@ export const orchestrator = (
       if (isConfigTypeArray(config)) {
         const commands = buildUninstallCommands(config);
         await install(commands);
-        display("✅ Packages uninstalled successfully", "success");
+        stopSpinner("Packages uninstalled successfully");
+        outro("Done!");
       }
     });
   }

@@ -5,7 +5,7 @@ import * as fsd from "fs";
 import * as path from "path";
 import type { CommandResult, ConfigType } from "./types/index.js";
 import { display } from "./display.js";
-import { confirm } from "@inquirer/prompts";
+import { confirm, isCancel, cancel } from "@clack/prompts";
 
 type PackageManager = "npm" | "yarn" | "pnpm";
 
@@ -14,7 +14,7 @@ type PackageManager = "npm" | "yarn" | "pnpm";
  */
 
 export function detectPackageManager(
-  projectPath: string = process.cwd(),
+  projectPath: string = process.cwd()
 ): PackageManager | void {
   // Check for lock files in order of specificity
   if (fsd.existsSync(path.join(projectPath, "pnpm-lock.yaml"))) {
@@ -39,7 +39,7 @@ export function detectPackageManager(
  */
 export const getConfigObject = async (
   packages: string[],
-  options?: any,
+  options?: any
 ): Promise<ConfigType[] | CommandResult[]> => {
   if (!options.pkgJson) {
     const configPath = getConfigPath();
@@ -60,7 +60,7 @@ export const getConfigObject = async (
         if (!configObject[pkg]) {
           display(
             `Package ${pkg} not found in the configuration file`,
-            "warning",
+            "warning"
           );
         }
         return configObject[pkg];
@@ -73,8 +73,9 @@ export const getConfigObject = async (
     if (options.addCommand) {
       result.forEach((config) => {
         config.packages.forEach((pkg) => {
-          pkg.command = pkg.interactive
-            ? pkg.command
+          pkg.command =
+            pkg.interactive ?
+              pkg.command
             : pkg.command + " " + options.addCommand;
         });
       });
@@ -91,8 +92,13 @@ export const getConfigObject = async (
       });
       const continueWithInstall = await confirm({
         message: "Continue with installation?",
-        default: true,
+        initialValue: true,
       });
+
+      if (isCancel(continueWithInstall)) {
+        cancel("Operation cancelled.");
+        process.exit(0);
+      }
 
       if (!continueWithInstall) {
         display("Installation cancelled ", "success");

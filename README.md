@@ -118,6 +118,7 @@ That's it! All packages from your config are installed automatically.
 ## Why PM-Auto?
 
 ### Before PM-Auto
+
 ```bash
 # Setting up a new React project
 npm install react react-dom
@@ -130,6 +131,7 @@ npm install -D @types/three
 ```
 
 ### With PM-Auto
+
 ```bash
 pm-auto install
 # Done. ✨
@@ -142,10 +144,11 @@ pm-auto install
 Install packages from your configured presets.
 
 ```bash
-pm-auto install [options] [packages...]
+pm-auto install|i|add [options] [packages...]
 ```
 
 **Options:**
+
 - `-p, --pkg-json` - Install all packages from package.json
 - `-A, --add-command <command>` - Add custom flags to all install commands
 - `-D, --dry-run` - Preview commands without executing them
@@ -175,10 +178,11 @@ pm-auto install --add-command "--legacy-peer-deps"
 Remove packages from configured presets.
 
 ```bash
-pm-auto uninstall [options] <packages...>
+pm-auto uninstall|u|remove [options] <packages...>
 ```
 
 **Options:**
+
 - `-A, --add-command <command>` - Add custom flags to uninstall commands
 - `-h, --help` - Display help
 
@@ -302,6 +306,7 @@ Create a JSON config file to define your tech stack presets.
 
 **Interactive commands:**
 Set `"interactive": true` for commands that require user input during installation, such as:
+
 - `create-next-app@latest my-app`
 - `create-vite@latest my-project`
 - `create-react-app my-app`
@@ -321,15 +326,19 @@ Set `"interactive": true` for commands that require user input during installati
 ## Use Cases
 
 ### Quick Project Setup
+
 Start new projects with your preferred stack instantly, no setup scripts needed.
 
 ### Team Consistency
+
 Share your config file with teammates so everyone uses the same packages and versions.
 
 ### Testing Compatibility
+
 Quickly test if your package works across different package managers.
 
 ### Learning & Experimentation
+
 Save configs for different frameworks you're learning—switch between stacks effortlessly.
 
 ## Requirements
@@ -340,16 +349,19 @@ Save configs for different frameworks you're learning—switch between stacks ef
 ## Troubleshooting
 
 **Config not found:**
+
 - Verify the config path is correct: `pm-auto config ./your-config.json`
 - Use absolute paths if relative paths aren't working
 - Ensure the config file is valid JSON
 
 **Packages not installing:**
+
 - Run with `--dry-run` to preview commands
 - Check that package names are spelled correctly
 - Verify your package manager is installed and accessible
 
 **Interactive commands hanging:**
+
 - Set `"interactive": true` for commands like `create-vite@latest`
 - These commands will prompt for user input during installation
 
@@ -358,6 +370,7 @@ Save configs for different frameworks you're learning—switch between stacks ef
 We welcome contributions! Here's how:
 
 1. **Fork & clone:**
+
    ```bash
    git clone https://github.com/Ellydev0/pm-auto.git
    cd pm-auto
@@ -365,6 +378,7 @@ We welcome contributions! Here's how:
    ```
 
 2. **Create a branch:**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -377,6 +391,7 @@ We welcome contributions! Here's how:
    ```bash
    git commit -m "feat: add your feature"
    ```
+
    - `feat:` - New features
    - `fix:` - Bug fixes
    - `docs:` - Documentation

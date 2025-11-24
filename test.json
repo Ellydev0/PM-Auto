@@ -1,4 +1,15 @@
 {
+  "sample": {
+    "name": "sample",
+    "packageManager": "npm",
+    "packages": [
+      {
+        "command": "gsap",
+        "interactive": false
+      }
+    ]
+  },
+
   "vite": {
     "name": "vite",
     "packageManager": "npm",
