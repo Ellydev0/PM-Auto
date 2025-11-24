@@ -10,12 +10,6 @@
   ],
   "license": "MIT",
   "author": "Elliot Otoijagha",
-  "contributors": [
-    {
-      "name": "Triumph Aidenojie",
-      "email": "triumphaidenojie08@gmail.com"
-    }
-  ],
   "type": "module",
   "main": "dist/index.js",
   "bin": {
