@@ -1,6 +1,6 @@
 {
   "name": "pm-auto",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A CLI tool to define and install your tech stack presets with one command.",
   "keywords": [
     "pm-auto",
