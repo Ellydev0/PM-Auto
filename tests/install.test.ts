@@ -62,15 +62,17 @@ describe("install", () => {
       },
     ];
 
-    const execaOrder: string[] = [];
-    vi.mocked(execa).mockImplementation((cmd) => {
-      execaOrder.push(cmd as string);
-      return Promise.resolve({} as any);
-    });
+    vi.mocked(execa).mockResolvedValue({} as any);
 
     await install(commands);
 
-    expect(execaOrder).toEqual(["npm", "npm"]);
+    // Check interactive was called first
+    expect(execa).toHaveBeenNthCalledWith(1, "npm", ["init"], {
+      stdio: "inherit",
+    });
+    expect(execa).toHaveBeenNthCalledWith(2, "npm", ["install"], {
+      stdio: "inherit",
+    });
     expect(display.stopSpinner).toHaveBeenCalled();
   });
 
