@@ -12,7 +12,7 @@ const program = new Command();
 
 program
   .name("pm-auto")
-  .version("1.0.1")
+  .version("1.0.4")
   .description(
     "A CLI tool to define and install your tech stack presets with one command.",
   );

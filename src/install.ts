@@ -26,7 +26,7 @@ async function runCommand(command: string, interactive: boolean = false) {
 }
 
 /**
- * Takes the interactive and non interactive command from each item in the CommandResult Array
+ * Install all commands
  */
 export async function install(commands: CommandResult[]) {
   try {

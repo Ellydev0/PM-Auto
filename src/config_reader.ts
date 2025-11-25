@@ -34,7 +34,7 @@ export function detectPackageManager(
 }
 
 /**
- * Get the installation commands from the config file, transforms into a js object and with the options given
+ * Gets the required packages from the config file, transforms into a js object and with the options given
  * it modifies the object and returns it
  */
 export const getConfigObject = async (
@@ -54,21 +54,23 @@ export const getConfigObject = async (
         "error",
       );
     }
+
     const configObject = JSON.parse(configContent);
     let result: ConfigType[] = Object.values(configObject);
 
     //filter the packages the user wants to install
     if (packages.length > 0) {
-      result = packages.map((pkg) => {
-        if (!configObject[pkg]) {
-          display(
-            `Package ${pkg} not found in the configuration file`,
-            "warning",
-          );
-        }
-        return configObject[pkg];
-      });
+      result = packages
+        .map((pkgName) => {
+          const found = result.find((pkg) => pkg.name === pkgName);
+          if (!found) {
+            display(`Package '${pkgName}' not found in config`, "warning");
+          }
+          return found;
+        })
+        .filter((pkg) => pkg !== undefined);
     }
+
     /*
      * Config object modification with the options given
      */

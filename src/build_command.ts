@@ -96,7 +96,7 @@ export function buildUninstallCommands(projects: ConfigType[]) {
 
     // Separate interactive from non-interactive packages
     const nonInteractive: PackageType[] = [];
-    const interactive: PackageType[] = [];
+    // const interactive: PackageType[] = [];
 
     if (packages) {
       packages.forEach((pkg) => {
