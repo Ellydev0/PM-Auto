@@ -1,6 +1,6 @@
 import { buildCommands, buildUninstallCommands } from "./build_command.js";
 import { getConfigObject } from "./config_reader.js";
-import { display, stopSpinner } from "./display.js";
+import { display } from "./display.js";
 import { install } from "./install.js";
 import type { ConfigType } from "./types/index.js";
 import { outro } from "@clack/prompts";
@@ -38,14 +38,13 @@ export const orchestrator = (
 
       if (isConfigTypeArray(config)) {
         const commands = buildCommands(config);
+
         await install(commands);
-        stopSpinner("Packages installed successfully");
-        process.stdout.write("\x07");
+        display("Packages installed successfully", "success");
         outro("Done!");
       } else {
         await install(config);
-
-        stopSpinner("Packages from package.json installed successfully");
+        display("Packages from package.json installed successfully", "success");
         outro("Done!");
       }
     });
@@ -64,7 +63,7 @@ export const orchestrator = (
       if (isConfigTypeArray(config)) {
         const commands = buildUninstallCommands(config);
         await install(commands);
-        stopSpinner("Packages uninstalled successfully");
+        display("Packages uninstalled successfully", "success");
         outro("Done!");
       }
     });

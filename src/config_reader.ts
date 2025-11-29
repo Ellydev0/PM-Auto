@@ -127,3 +127,59 @@ export const getConfigObject = async (
     return result;
   }
 };
+
+export const getConfigKeys = async (options: any) => {
+  const configPath = getConfigPath();
+
+  //read config file content
+  let configContent = "";
+  try {
+    configContent = await fs.readFile(configPath as string, "utf8");
+  } catch (error) {
+    display(
+      `File not found ${error} Try updating the config file path`,
+      "error",
+    );
+  }
+
+  const configObject = JSON.parse(configContent);
+  let keys = Object.keys(configObject);
+
+  keys.forEach((key) => {
+    if (options.desc) {
+      const description = !configObject[key].description
+        ? "No description"
+        : configObject[key].description;
+      display(`${key} - ${description}`, "info");
+    } else {
+      display(`${key}`, "info");
+    }
+  });
+};
+
+export const getPackageDescription = async (packageName: string) => {
+  const configPath = getConfigPath();
+
+  //read config file content
+  let configContent = "";
+  try {
+    configContent = await fs.readFile(configPath as string, "utf8");
+  } catch (error) {
+    display(
+      `File not found ${error} Try updating the config file path`,
+      "error",
+    );
+  }
+
+  const configObject = JSON.parse(configContent);
+  let keys = Object.keys(configObject);
+
+  keys.forEach((key) => {
+    if (key === packageName) {
+      const description = !configObject[key].description
+        ? "No description"
+        : configObject[key].description;
+      display(`${packageName} - ${description}`, "info");
+    }
+  });
+};

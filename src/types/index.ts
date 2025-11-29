@@ -1,5 +1,6 @@
 export interface ConfigType {
   name: string;
+  description?: string;
   packageManager: string;
   packages: { command: string; interactive: boolean }[];
 }

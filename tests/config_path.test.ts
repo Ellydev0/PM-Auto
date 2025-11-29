@@ -1,11 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as fs from "fs";
 import * as os from "os";
-import {
-  saveConfigPath,
-  getConfigPath,
-  clearConfigPath,
-} from "../src/config_path.js";
+import { saveConfigPath, getConfigPath } from "../src/config_path.js";
 import * as display from "../src/display.js";
 
 const mocks = vi.hoisted(() => {
@@ -119,24 +115,6 @@ describe("Config Path Management", () => {
       const result = getConfigPath();
 
       expect(result).toBe("");
-    });
-  });
-
-  describe("clearConfigPath", () => {
-    it("deletes settings file if exists", () => {
-      vi.mocked(fs.existsSync).mockReturnValue(true);
-
-      clearConfigPath();
-
-      expect(fs.unlinkSync).toHaveBeenCalledWith(mockSettingsFile);
-    });
-
-    it("does nothing if file does not exist", () => {
-      vi.mocked(fs.existsSync).mockReturnValue(false);
-
-      clearConfigPath();
-
-      expect(fs.unlinkSync).not.toHaveBeenCalled();
     });
   });
 });

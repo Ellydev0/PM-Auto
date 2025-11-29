@@ -1,14 +1,12 @@
 import { execa } from "execa";
 import type { CommandResult } from "./types/index.js";
-import { display, stopSpinner } from "./display.js";
+import { display } from "./display.js";
 
 async function runCommand(command: string, interactive: boolean = false) {
   try {
     const [commandName, ...args] = command.split(" ");
 
     if (interactive) {
-      // Stop spinner before interactive command
-      stopSpinner("Starting interactive command...", 0);
       await execa(commandName as string, args, {
         stdio: "inherit",
       });
@@ -40,7 +38,7 @@ export async function install(commands: CommandResult[]) {
       }
 
       // Then run non-interactive
-      if (command.nonInteractive) {
+      if (command.nonInteractive.length > 0) {
         // For non-interactive, we show a spinner
         display(`Running command: ${command.nonInteractive[0]}`, "loading");
         await runCommand(command.nonInteractive[0] as string, false);

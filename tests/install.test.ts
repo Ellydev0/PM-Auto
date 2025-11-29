@@ -26,10 +26,6 @@ describe("install", () => {
 
     await install(commands);
 
-    expect(display.stopSpinner).toHaveBeenCalledWith(
-      "Starting interactive command...",
-      0,
-    );
     expect(execa).toHaveBeenCalledWith("npm", ["init"], { stdio: "inherit" });
     expect(display.display).toHaveBeenCalledWith(expect.any(String), "info");
   });
@@ -73,7 +69,6 @@ describe("install", () => {
     expect(execa).toHaveBeenNthCalledWith(2, "npm", ["install"], {
       stdio: "inherit",
     });
-    expect(display.stopSpinner).toHaveBeenCalled();
   });
 
   it("handles multiple interactive commands sequentially", async () => {

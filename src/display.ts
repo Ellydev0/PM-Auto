@@ -3,17 +3,11 @@ import chalk from "chalk";
 
 type DisplayType = "error" | "success" | "warning" | "info" | "loading" | "";
 
-export const stopSpinner = (text: string, code: number = 0) => {
-  const s = spinner();
-  if (!s || typeof s.stop !== "function") return;
-  s.stop(code === 0 ? chalk.green(text) : chalk.red(text));
-};
-
 export const display = (text: string, type: DisplayType) => {
   switch (type) {
     case "error":
       log.error(chalk.red(text));
-      process.exit(1);
+      process.exit(0);
 
     case "success":
       log.success(chalk.green(text)); // Use log.success instead

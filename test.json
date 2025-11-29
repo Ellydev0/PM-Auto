@@ -1,6 +1,7 @@
 {
   "sample": {
     "name": "sample",
+    "description": "",
     "packageManager": "npm",
     "packages": [
       {
@@ -12,20 +13,9 @@
 
   "vite": {
     "name": "vite",
+    "description": "Vite configuration",
     "packageManager": "npm",
     "packages": [
-      {
-        "command": "@types/three --save-dev",
-        "interactive": false
-      },
-      {
-        "command": "@react-three/fiber",
-        "interactive": false
-      },
-      {
-        "command": "gsap",
-        "interactive": false
-      },
       {
         "command": "create-vite@latest my-app",
         "interactive": true
@@ -35,6 +25,7 @@
 
   "next": {
     "name": "next",
+    "description": "Next.js configuration",
     "packageManager": "pnpm",
     "packages": [
       {
@@ -57,6 +48,7 @@
   },
   "test": {
     "name": "test",
+    "description": "Test configuration",
     "packageManager": "npm",
     "packages": [
       {
@@ -75,6 +67,7 @@
   },
   "test2": {
     "name": "test2",
+    "description": "Test2 configuration",
     "packageManager": "npm",
     "packages": [
       {

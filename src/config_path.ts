@@ -46,9 +46,3 @@ export function getConfigPath(): string | void {
     display(`Error reading config file path: ${error.message}`, "error");
   }
 }
-
-export function clearConfigPath(): void {
-  if (fs.existsSync(SETTINGS_FILE)) {
-    fs.unlinkSync(SETTINGS_FILE);
-  }
-}

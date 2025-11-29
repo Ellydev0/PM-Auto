@@ -58,24 +58,37 @@ yarn global add pm-auto
 
 ## Quick Start
 
-**1. Create a config file** (e.g., `pm-auto-config.json`):
+**1. Create a config file** (e.g., `config.json`):
 
 ```json
 {
-  "react-stack": {
-    "name": "react-stack",
+  "InstallVite": {
+    "name": "vite",
+    "description": "Vite configuration",
     "packageManager": "npm",
     "packages": [
       {
-        "command": "react react-dom",
+        "command": "create-vite@latest my-app",
+        "interactive": true
+      }
+    ]
+  },
+
+  "Next.js": {
+    "name": "next",
+    "description": "Next.js configuration",
+    "packageManager": "pnpm",
+    "packages": [
+      {
+        "command": "three --save-dev",
         "interactive": false
       },
       {
-        "command": "@types/react @types/react-dom --save-dev",
+        "command": "@react-three/drei",
         "interactive": false
       },
       {
-        "command": "vite @vitejs/plugin-react --save-dev",
+        "command": "framer-motion",
         "interactive": false
       },
       {
@@ -83,37 +96,24 @@ yarn global add pm-auto
         "interactive": true
       }
     ]
-  },
-  "express-api": {
-    "name": "express-api",
-    "packageManager": "pnpm",
-    "packages": [
-      {
-        "command": "express dotenv cors helmet",
-        "interactive": false
-      },
-      {
-        "command": "@types/express @types/node --save-dev",
-        "interactive": false
-      }
-    ]
   }
 }
+
 ```
 
 **2. Set your config path:**
 
 ```bash
-pm-auto config ./pm-auto-config.json
+pm-auto config ./config.json
 ```
 
 **3. Install your stack:**
 
 ```bash
-pm-auto install
+pm-auto install vite
 ```
 
-That's it! All packages from your config are installed automatically.
+That's it! The vite package from your config is installed automatically.
 
 ## Why PM-Auto?
 
@@ -161,7 +161,7 @@ pm-auto install|i|add [options] [packages...]
 pm-auto install
 
 # Install specific packages to all presets
-pm-auto install lodash axios
+pm-auto install vite next
 
 # Install from existing package.json
 pm-auto install --pkg-json
@@ -169,8 +169,8 @@ pm-auto install --pkg-json
 # Preview what would be installed
 pm-auto install --dry-run
 
-# Add custom flags (e.g., for peer dependency issues)
-pm-auto install --add-command "--legacy-peer-deps"
+# Add custom flags for non interactive commands(e.g., for peer dependency issues)
+pm-auto install vite --add-command "--legacy-peer-deps"
 ```
 
 ### `pm-auto uninstall`
@@ -190,13 +190,13 @@ pm-auto uninstall|u|remove [options] <packages...>
 
 ```bash
 # Uninstall single package
-pm-auto uninstall lodash
+pm-auto uninstall vite
 
 # Uninstall multiple packages
-pm-auto uninstall lodash axios moment
+pm-auto uninstall vite next
 
-# Force uninstall
-pm-auto uninstall lodash --add-command "--force"
+# Force uninstall for non interactive commands
+pm-auto uninstall vite --add-command "--force"
 ```
 
 ### `pm-auto config`
@@ -213,11 +213,62 @@ pm-auto config <path>
 # Set config with relative path
 pm-auto config ./pm-auto-config.json
 
-# Set config with absolute path
-pm-auto config /home/user/configs/pm-auto-config.json
 ```
 
 **Note:** The config path is stored persistently. If you move your config file, run `pm-auto config <new-path>` again.
+
+### `pm-auto list`
+List all packages from the config file
+```bash
+pm-auto list|ls
+```
+**Options:**
+
+- `-D, --desc <command>` - Display packages description
+- `-h, --help` - Display help
+
+**Examples:**
+
+```bash
+# List all presets
+pm-auto list
+
+```
+
+### `pm-auto describe`
+Display description of the package
+```bash
+pm-auto describe <package-name>
+```
+**Options:**
+
+- `-h, --help` - Display help
+
+**Examples:**
+
+```bash
+# List all presets
+pm-auto describe vite
+
+```
+### `pm-auto config-path`
+
+Display path to the config file
+```bash
+pm-auto config-path|cp
+```
+**Options:**
+
+- `-h, --help` - Display help
+
+**Examples:**
+
+```bash
+# List all presets
+pm-auto config-path
+
+```
+
 
 ## Configuration
 
@@ -227,8 +278,9 @@ Create a JSON config file to define your tech stack presets.
 
 ```json
 {
-  "preset-name": {
+  "Key": {
     "name": "preset-name",
+    "description": "Description of the preset",
     "packageManager": "npm",
     "packages": [
       {
@@ -241,8 +293,9 @@ Create a JSON config file to define your tech stack presets.
 ```
 
 ### Config Fields
-
-- **`name`** - Identifier for the preset (should match the key)
+- **`Key`** - Identifier for the preset (it can be anything)
+- **`name`** - The preset name (should be simple for easy remembrance)
+- **`description`** - Description of the preset
 - **`packageManager`** - Package manager to use: `npm`, `yarn`, or `pnpm`
 - **`packages`** - Array of package configurations
   - **`command`** - Package name(s) and flags (e.g., `lodash`, `typescript --save-dev`, `react react-dom`)
@@ -256,6 +309,7 @@ Create a JSON config file to define your tech stack presets.
 {
   "fullstack-ts": {
     "name": "fullstack-ts",
+    "description": "Full-stack TypeScript setup with Express and TypeScript",
     "packageManager": "npm",
     "packages": [
       {
@@ -285,6 +339,7 @@ Create a JSON config file to define your tech stack presets.
 {
   "threejs-react": {
     "name": "threejs-react",
+    "description": "Three.js + React project setup",
     "packageManager": "pnpm",
     "packages": [
       {
@@ -313,7 +368,7 @@ Set `"interactive": true` for commands that require user input during installati
 
 ### Config Tips
 
-1. **Group related packages** - Combine packages that are always installed together in one command (e.g., `react react-dom`)
+1. **Group related packages** - Combine packages that are always installed together in one command (e.g., `react react-dom gsap`)
 2. **Use descriptive names** - Name presets by purpose: `api-starter`, `frontend-base`, `testing-setup`
 3. **Multiple presets** - Create different presets for different project types in the same config
 4. **Version control** - Commit your config file to share stacks across your team
