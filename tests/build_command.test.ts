@@ -6,10 +6,15 @@ describe("buildCommand", () => {
   const mockConfig: ConfigType[] = [
     {
       name: "vite",
-      packageManager: "npm",
+      packageManager: "pnpm",
       packages: [
         { command: "vite@latest", interactive: true },
         { command: "gsap@latest", interactive: false },
+        { command: "react-dom@latest --save-dev", interactive: false },
+        { command: "lodash --save-dev", interactive: false },
+        { command: "typescript@latest --save-dev", interactive: false },
+        { command: "clsx", interactive: false },
+        { command: "shadcn", interactive: true },
       ],
     },
   ];
@@ -18,8 +23,13 @@ describe("buildCommand", () => {
     expect(command).toEqual([
       {
         name: "vite",
-        interactive: ["npx vite@latest"],
-        nonInteractive: ["npm install gsap@latest"],
+        interactive: ["pnpm dlx vite@latest", "pnpm dlx shadcn"],
+        nonInteractive: [
+          "pnpm add react-dom@latest --save-dev",
+          "pnpm add lodash --save-dev",
+          "pnpm add typescript@latest --save-dev",
+          "pnpm add gsap@latest clsx",
+        ],
       },
     ]);
   });
@@ -30,7 +40,9 @@ describe("buildCommand", () => {
       {
         name: "vite",
         interactive: [],
-        nonInteractive: ["npm uninstall gsap@latest"],
+        nonInteractive: [
+          "pnpm remove gsap@latest react-dom@latest lodash typescript@latest clsx",
+        ],
       },
     ]);
   });

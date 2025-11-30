@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { display } from "../src/display.js";
+import { display, s } from "../src/display.js";
 import { log, spinner } from "@clack/prompts";
+import chalk from "chalk";
 
-// Mock the dependencies
+// Mock dependencies
 vi.mock("@clack/prompts", () => ({
   log: {
     error: vi.fn(),
@@ -11,7 +12,10 @@ vi.mock("@clack/prompts", () => ({
     info: vi.fn(),
     message: vi.fn(),
   },
-  spinner: vi.fn(),
+  spinner: vi.fn(() => ({
+    start: vi.fn(),
+    stop: vi.fn(),
+  })),
 }));
 
 vi.mock("chalk", () => ({
@@ -23,61 +27,65 @@ vi.mock("chalk", () => ({
   },
 }));
 
-describe("display", () => {
-  let mockSpinner: any;
-  let exitSpy: any;
+describe("display function", () => {
+  let processExitSpy: any;
 
   beforeEach(() => {
-    mockSpinner = {
-      stop: vi.fn(),
-      start: vi.fn(),
-    };
-    vi.mocked(spinner).mockReturnValue(mockSpinner);
-    exitSpy = vi
+    vi.clearAllMocks();
+    processExitSpy = vi
       .spyOn(process, "exit")
-      .mockImplementation(() => undefined as never);
+      .mockImplementation(() => ({}) as never);
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
-    exitSpy.mockRestore();
+    processExitSpy.mockRestore();
   });
 
   it("should display error message and exit process", () => {
-    display("Error text", "error");
-    expect(log.error).toHaveBeenCalledWith("red:Error text");
-    expect(exitSpy).toHaveBeenCalledWith(0);
+    display("Error occurred", "error");
+
+    expect(chalk.red).toHaveBeenCalledWith("Error occurred");
+    expect(log.error).toHaveBeenCalledWith("red:Error occurred");
+    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it("should display success message", () => {
-    display("Success text", "success");
-    expect(log.success).toHaveBeenCalledWith("green:Success text");
-    expect(exitSpy).not.toHaveBeenCalled();
+    display("Operation successful", "success");
+
+    expect(chalk.green).toHaveBeenCalledWith("Operation successful");
+    expect(log.success).toHaveBeenCalledWith("green:Operation successful");
   });
 
   it("should display warning message", () => {
-    display("Warning text", "warning");
-    expect(log.warn).toHaveBeenCalledWith("yellow:Warning text");
+    display("Warning message", "warning");
+
+    expect(chalk.yellow).toHaveBeenCalledWith("Warning message");
+    expect(log.warn).toHaveBeenCalledWith("yellow:Warning message");
   });
 
   it("should display info message", () => {
-    display("Info text", "info");
-    expect(log.info).toHaveBeenCalledWith("blue:Info text");
+    display("Info message", "info");
+
+    expect(chalk.blue).toHaveBeenCalledWith("Info message");
+    expect(log.info).toHaveBeenCalledWith("blue:Info message");
   });
 
   it("should start spinner for loading type", () => {
-    const result = display("Loading text", "loading");
-    expect(mockSpinner.start).toHaveBeenCalledWith("Loading text");
-    expect(result).toBe(mockSpinner);
+    const result = display("Loading...", "loading");
+
+    expect(s.start).toHaveBeenCalledWith("Loading...");
+    expect(result).toBe(s);
   });
 
-  it("should display plain message for default/empty type", () => {
-    display("Plain text", "");
-    expect(log.message).toHaveBeenCalledWith("Plain text");
+  it("should display default message for empty type", () => {
+    display("Default message", "");
+
+    expect(log.message).toHaveBeenCalledWith("Default message");
   });
 
-  it("should display plain message when type is not recognized", () => {
-    display("Unknown text", "unknown" as any);
-    expect(log.message).toHaveBeenCalledWith("Unknown text");
+  it("should display default message for unrecognized type", () => {
+    display("Random message", "unknown" as any);
+
+    expect(log.message).toHaveBeenCalledWith("Random message");
   });
 });

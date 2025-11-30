@@ -1,6 +1,6 @@
 {
   "name": "pm-auto",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A CLI tool to define and install your tech stack presets with one command.",
   "keywords": [
     "pm-auto",
@@ -20,7 +20,7 @@
     "dev": "nodemon --exec tsx src/index.ts",
     "start": "node dist/index.js",
     "prepublishOnly": "npm run build",
-    "test": "vitest run"
+    "test": "vitest"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",

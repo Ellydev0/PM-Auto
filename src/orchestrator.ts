@@ -40,12 +40,13 @@ export const orchestrator = (
         const commands = buildCommands(config);
 
         await install(commands);
-        display("Packages installed successfully", "success");
         outro("Done!");
+
+        display("Packages installed successfully", "success");
       } else {
         await install(config);
-        display("Packages from package.json installed successfully", "success");
         outro("Done!");
+        display("Packages from package.json installed successfully", "success");
       }
     });
   } else {
@@ -63,8 +64,9 @@ export const orchestrator = (
       if (isConfigTypeArray(config)) {
         const commands = buildUninstallCommands(config);
         await install(commands);
-        display("Packages uninstalled successfully", "success");
         outro("Done!");
+
+        display("Packages uninstalled successfully", "success");
       }
     });
   }

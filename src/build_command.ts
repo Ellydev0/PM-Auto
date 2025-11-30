@@ -57,7 +57,20 @@ export function buildCommands(projects: ConfigType[]) {
 
     // Batch all non-interactive packages into ONE command
     if (nonInteractive.length > 0) {
-      const packageNames = nonInteractive.map((pkg) => pkg.command).join(" ");
+      const packageNames = nonInteractive
+        .map((pkg) => {
+          if (!pkg.command.includes("-")) {
+            return pkg.command;
+          }
+        })
+        .filter((item) => item !== undefined)
+        .join(" ");
+
+      nonInteractive.map((pkg) => {
+        if (pkg.command.includes("-")) {
+          result.nonInteractive.push(`${manager.install} ${pkg.command}`);
+        }
+      });
       result.nonInteractive.push(`${manager.install} ${packageNames}`);
     }
 
@@ -77,7 +90,7 @@ export function buildUninstallCommands(projects: ConfigType[]) {
         install: "npm uninstall",
       },
       pnpm: {
-        install: "pnpm uninstall",
+        install: "pnpm remove",
       },
       yarn: {
         install: "yarn remove",
@@ -108,7 +121,9 @@ export function buildUninstallCommands(projects: ConfigType[]) {
 
     // Batch all non-interactive packages into ONE command
     if (nonInteractive.length > 0) {
-      const packageNames = nonInteractive.map((pkg) => pkg.command).join(" ");
+      const packageNames = nonInteractive
+        .map((pkg) => pkg.command.trim().split(/\s+/)[0])
+        .join(" ");
       result.nonInteractive.push(`${manager.install} ${packageNames}`);
     }
 

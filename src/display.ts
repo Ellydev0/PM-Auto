@@ -2,7 +2,7 @@ import { log, spinner } from "@clack/prompts";
 import chalk from "chalk";
 
 type DisplayType = "error" | "success" | "warning" | "info" | "loading" | "";
-
+export const s = spinner();
 export const display = (text: string, type: DisplayType) => {
   switch (type) {
     case "error":
@@ -22,7 +22,6 @@ export const display = (text: string, type: DisplayType) => {
       break;
 
     case "loading":
-      const s = spinner();
       s.start(text);
       return s; // Return spinner so it can be stopped later
 

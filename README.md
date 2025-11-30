@@ -14,6 +14,9 @@ PM-Auto is a CLI tool that lets you define your tech stack presets once and inst
   - [pm-auto install](#pm-auto-install)
   - [pm-auto uninstall](#pm-auto-uninstall)
   - [pm-auto config](#pm-auto-config)
+  - [pm-auto list](#pm-auto-list)
+  - [pm-auto describe](#pm-auto-describe)
+  - [pm-auto config-path](#pm-auto-config-path)
 - [Configuration](#configuration)
   - [Config Structure](#config-structure)
   - [Config Fields](#config-fields)
@@ -183,7 +186,7 @@ pm-auto uninstall|u|remove [options] <packages...>
 
 **Options:**
 
-- `-A, --add-command <command>` - Add custom flags to uninstall commands
+- `-D, --dry-run` - Preview uninstall commands without executing them
 - `-h, --help` - Display help
 
 **Examples:**
@@ -195,8 +198,8 @@ pm-auto uninstall vite
 # Uninstall multiple packages
 pm-auto uninstall vite next
 
-# Force uninstall for non interactive commands
-pm-auto uninstall vite --add-command "--force"
+# Dryrun uninstall for non interactive commands
+pm-auto uninstall vite --dry-run
 ```
 
 ### `pm-auto config`

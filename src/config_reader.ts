@@ -91,21 +91,22 @@ export const getConfigObject = async (
       result.forEach((config) => {
         display(`Package name -> ${config.name}`, "info");
         config.packages.forEach((pkg) => {
-          display(`add ${pkg.command}`, "info");
+          display(`running ${pkg.command}`, "info");
         });
       });
-      const continueWithInstall = await confirm({
-        message: "Continue with installation?",
+      const continuation = await confirm({
+        message: "Continue?",
         initialValue: true,
       });
 
-      if (isCancel(continueWithInstall)) {
+      if (isCancel(continuation)) {
         cancel("Operation cancelled.");
         process.exit(0);
       }
 
-      if (!continueWithInstall) {
-        display("Installation cancelled ", "success");
+      if (!continuation) {
+        display("Operation cancelled. ", "success");
+        process.exit(0);
       }
     }
 
@@ -172,13 +173,13 @@ export const getPackageDescription = async (packageName: string) => {
   }
 
   const configObject = JSON.parse(configContent);
-  let keys = Object.keys(configObject);
+  const configObjectArray: ConfigType[] = Object.values(configObject);
 
-  keys.forEach((key) => {
-    if (key === packageName) {
-      const description = !configObject[key].description
+  configObjectArray.forEach((configObject) => {
+    if (configObject.name === packageName) {
+      const description = !configObject.description
         ? "No description"
-        : configObject[key].description;
+        : configObject.description;
       display(`${packageName} - ${description}`, "info");
     }
   });

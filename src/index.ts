@@ -14,7 +14,7 @@ const program = new Command();
 
 program
   .name("pm-auto")
-  .version("1.0.5")
+  .version("1.0.6")
   .description(
     "A CLI tool to define and install your tech stack presets with one command.",
   );
@@ -51,10 +51,8 @@ program
   .description(
     "Remove packages using the detected package manager (Aliases: remove, u, un)",
   )
-  .option(
-    "-A, --add-command <command>",
-    "Add a custom command to all installation commands from config file",
-  )
+  .option("-D, --dry-run", "Dry run - Display commands before execution")
+
   .action((packages, options) => {
     orchestrator("uninstall", packages, options);
   });
