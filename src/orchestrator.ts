@@ -1,4 +1,7 @@
-import { buildCommands, buildUninstallCommands } from "./build_command.js";
+import {
+  buildInstallCommands,
+  buildUninstallCommands,
+} from "./build_command.js";
 import { getConfigObject } from "./config_reader.js";
 import { display } from "./display.js";
 import { install } from "./install.js";
@@ -37,7 +40,7 @@ export const orchestrator = (
       }
 
       if (isConfigTypeArray(config)) {
-        const commands = buildCommands(config);
+        const commands = buildInstallCommands(config);
 
         await install(commands);
         outro("Done!");

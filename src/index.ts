@@ -14,10 +14,8 @@ const program = new Command();
 
 program
   .name("pm-auto")
-  .version("1.0.6")
-  .description(
-    "A CLI tool to define and install your tech stack presets with one command.",
-  );
+  .version("1.0.7")
+  .description("Automate your project setup with one command");
 
 program
   .command("config <path>")

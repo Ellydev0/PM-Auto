@@ -4,7 +4,30 @@ import type { ConfigType, PackageType, CommandResult } from "./types/index.js";
  * Build commands from project configurations.
  */
 
-export function buildCommands(projects: ConfigType[]) {
+/**
+ * Extracts the package name from a raw command string
+ * Removes version and any flags (starts with -)
+ */
+
+export function cleanCommand(rawCommand: string): string {
+  // Split by spaces and pick first segment that doesn't start with "-"
+  const parts = rawCommand.trim().split(" ");
+  for (const part of parts) {
+    if (!part.startsWith("-")) {
+      // Remove version if exists
+
+      const atIndex = part.indexOf("@");
+      if (atIndex > 0) {
+        return part.slice(0, atIndex).trim();
+      } else {
+        return part.trim();
+      }
+    }
+  }
+  return ""; // fallback
+}
+
+export function buildInstallCommands(projects: ConfigType[]) {
   // Initialize arrays properly
 
   const commandArray: CommandResult[] = [];
@@ -15,14 +38,22 @@ export function buildCommands(projects: ConfigType[]) {
       npm: {
         install: "npm install",
         run: "npx",
+        dev: "-D",
       },
       pnpm: {
         install: "pnpm add",
         run: "pnpm dlx",
+        dev: "-D",
       },
       yarn: {
         install: "yarn add",
         run: "yarn dlx",
+        dev: "-D",
+      },
+      bun: {
+        install: "bun add",
+        run: "bunx",
+        dev: "-d",
       },
     };
 
@@ -31,7 +62,7 @@ export function buildCommands(projects: ConfigType[]) {
       commandPrefixes.npm;
 
     const result: CommandResult = {
-      name: project.name,
+      presetName: project.presetName,
       interactive: [],
       nonInteractive: [],
     };
@@ -52,26 +83,43 @@ export function buildCommands(projects: ConfigType[]) {
 
     // Add interactive packages as separate commands (sequential)
     interactive.forEach((pkg) => {
-      result.interactive.push(`${manager.run} ${pkg.command}`);
+      result.interactive.push(
+        `${manager.run} ${cleanCommand(pkg.command)}${pkg.version ? `@${pkg.version}` : ""} ${pkg.flags?.join(" ") || ""}`.trim(),
+      );
     });
 
-    // Batch all non-interactive packages into ONE command
+    // Batch all non-interactive packages
     if (nonInteractive.length > 0) {
-      const packageNames = nonInteractive
-        .map((pkg) => {
-          if (!pkg.command.includes("-")) {
-            return pkg.command;
-          }
-        })
-        .filter((item) => item !== undefined)
-        .join(" ");
+      const batchPackages: string[] = [];
 
-      nonInteractive.map((pkg) => {
-        if (pkg.command.includes("-")) {
-          result.nonInteractive.push(`${manager.install} ${pkg.command}`);
+      nonInteractive.forEach((pkg) => {
+        const base = cleanCommand(pkg.command); // package name or full command
+        let cmd = base;
+
+        // Append version if present
+        if (pkg.version) {
+          cmd += `@${pkg.version}`;
         }
+
+        // Append dev flag if true (mapped per manager)
+        if (pkg.dev) {
+          cmd += ` ${manager.dev}`;
+        }
+
+        // Append any extra flags
+        if (pkg.flags?.length) {
+          cmd += ` ${pkg.flags.join(" ")}`;
+        }
+
+        batchPackages.push(cmd);
       });
-      result.nonInteractive.push(`${manager.install} ${packageNames}`);
+
+      // Push a single install command for all batchable packages
+      if (batchPackages.length > 0) {
+        result.nonInteractive.push(
+          `${manager.install} ${batchPackages.join(" ")}`,
+        );
+      }
     }
 
     commandArray.push(result);
@@ -87,13 +135,16 @@ export function buildUninstallCommands(projects: ConfigType[]) {
 
     const commandPrefixes = {
       npm: {
-        install: "npm uninstall",
+        uninstall: "npm uninstall",
       },
       pnpm: {
-        install: "pnpm remove",
+        uninstall: "pnpm remove",
       },
       yarn: {
-        install: "yarn remove",
+        uninstall: "yarn remove",
+      },
+      bun: {
+        uninstall: "bun remove",
       },
     };
 
@@ -102,14 +153,13 @@ export function buildUninstallCommands(projects: ConfigType[]) {
       commandPrefixes.npm;
 
     const result: CommandResult = {
-      name: project.name,
+      presetName: project.presetName,
       interactive: [],
       nonInteractive: [],
     };
 
     // Separate interactive from non-interactive packages
     const nonInteractive: PackageType[] = [];
-    // const interactive: PackageType[] = [];
 
     if (packages) {
       packages.forEach((pkg) => {
@@ -122,9 +172,9 @@ export function buildUninstallCommands(projects: ConfigType[]) {
     // Batch all non-interactive packages into ONE command
     if (nonInteractive.length > 0) {
       const packageNames = nonInteractive
-        .map((pkg) => pkg.command.trim().split(/\s+/)[0])
+        .map((pkg) => cleanCommand(pkg.command))
         .join(" ");
-      result.nonInteractive.push(`${manager.install} ${packageNames}`);
+      result.nonInteractive.push(`${manager.uninstall} ${packageNames}`);
     }
 
     commandArray.push(result);
