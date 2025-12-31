@@ -1,53 +1,50 @@
-# PM-Auto
+# PM-Auto (Package Manager Automation)
 
-**Stop typing the same npm install commands over and over.**
+**Install your entire project stack with one command.**
 
-PM-Auto is a CLI tool that lets you define your tech stack presets once and install them anywhere with a single command. No more trying so hard to remember package names, no more repetitive typing—just fast, consistent project setup.
+PM-Auto is a CLI that lets you define reusable package presets (your usual tech stacks) and install them anywhere instantly. No more copy-pasting npm commands or forgetting dependencies.
 
-## Table of Contents
+If you regularly set up the same kind of projects, PM-Auto saves real time.
 
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Why PM-Auto?](#why-pm-auto)
-- [Commands](#commands)
-  - [pm-auto install](#pm-auto-install)
-  - [pm-auto uninstall](#pm-auto-uninstall)
-  - [pm-auto config](#pm-auto-config)
-  - [pm-auto list](#pm-auto-list)
-  - [pm-auto describe](#pm-auto-describe)
-  - [pm-auto config-path](#pm-auto-config-path)
-- [Configuration](#configuration)
-  - [Config Structure](#config-structure)
-  - [Config Fields](#config-fields)
-  - [Real-World Examples](#real-world-examples)
-  - [Important Notes](#important-notes)
-  - [Config Tips](#config-tips)
-- [Global Options](#global-options)
-- [Use Cases](#use-cases)
-- [Requirements](#requirements)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [Contributors](#contributors)
+---
+
+## Why PM-Auto Exists (Plain English)
+
+Most devs do this:
 
 ```bash
-# Instead of this every time...
 npm install react react-dom
 npm install -D @types/react @types/react-dom
 npm install vite @vitejs/plugin-react
 npm install three @react-three/fiber gsap
-
-# Do this once
-pm-auto install
 ```
 
-## Features
+Every. Single. Time.
 
-- 🚀 **One-command setup** - Install your entire tech stack instantly
-- 📦 **Reusable presets** - Define stacks once, use across all projects
-- 🔧 **Flexible package managers** - Works with npm, yarn, and pnpm
-- ⚡ **Save time** - No more copying package lists or checking old projects
-- 🎯 **Project-specific** - Different stacks for different project types
+PM-Auto lets you define that once in a config file, then reuse it forever:
+
+```bash
+pm-auto install vite
+```
+
+Done.
+
+---
+
+## Core Concepts
+
+PM-Auto is built around **presets**.
+
+A **preset** is:
+
+* A name (e.g. `vite`, `next`, `threejs-react`)
+* A package manager (`npm`, `pnpm`, or `yarn`)
+* A list of packages to be installed
+
+You store presets in a JSON config file.
+PM-Auto reads that file and runs the commands for you.
+
+---
 
 ## Installation
 
@@ -59,429 +56,297 @@ pnpm add -g pm-auto
 yarn global add pm-auto
 ```
 
-## Quick Start
+Verify:
 
-**1. Create a config file** (e.g., `config.json`):
+```bash
+pm-auto -V
+```
+
+---
+
+## Quick Start (Minimal Path)
+
+### 1. Create a config file
+
+Create `config.json`:
 
 ```json
 {
-  "InstallVite": {
-    "name": "vite",
-    "description": "Vite configuration",
-    "packageManager": "npm",
+  "example": {
+    "presetName": "example",
+    "description": "A sample configuration demonstrating all options for PM-Auto",
+    "packageManager": "bun",
     "packages": [
       {
-        "command": "create-vite@latest my-app",
-        "interactive": true
-      }
-    ]
-  },
-
-  "Next.js": {
-    "name": "next",
-    "description": "Next.js configuration",
-    "packageManager": "pnpm",
-    "packages": [
-      {
-        "command": "three --save-dev",
-        "interactive": false
+        "command": "create-next-app",
+        "interactive": true,
+        "dev": false, //optional
+        "version": "latest", //optional
+        "flags": ["."] //optional
       },
-      {
-        "command": "@react-three/drei",
-        "interactive": false
-      },
-      {
-        "command": "framer-motion",
-        "interactive": false
-      },
-      {
-        "command": "create-next-app@latest my-app",
-        "interactive": true
-      }
     ]
   }
 }
-
 ```
 
-**2. Set your config path:**
+### 2. Register the config path
 
 ```bash
 pm-auto config ./config.json
 ```
 
-**3. Install your stack:**
+(⚠️ Always make sure to register the config path before using PM-Auto and anytime you make changes to the config path.)
+
+### 3. Install a preset
 
 ```bash
-pm-auto install vite
+pm-auto install example
 ```
 
-That's it! The vite package from your config is installed automatically.
+PM-Auto executes each command using the specified package manager.
 
-## Why PM-Auto?
+---
 
-### Before PM-Auto
-
-```bash
-# Setting up a new React project
-npm install react react-dom
-npm install -D @types/react @types/react-dom
-npm install vite @vitejs/plugin-react
-npm install three @react-three/fiber
-npm install gsap
-npm install -D @types/three
-# ... did I forget anything?
-```
-
-### With PM-Auto
-
-```bash
-pm-auto install
-# Done. ✨
-```
-
-## Commands
+## Commands Overview
 
 ### `pm-auto install`
 
-Install packages from your configured presets.
+Install presets from your config.
 
 ```bash
-pm-auto install|i|add [options] [packages...]
+pm-auto install [preset-name]
 ```
 
-**Options:**
+Common options:
 
-- `-p, --pkg-json` - Install all packages from package.json
-- `-A, --add-command <command>` - Add custom flags to all install commands
-- `-D, --dry-run` - Preview commands without executing them
-- `-h, --help` - Display help
+* `--dry-run` → preview commands without running them
+* `--add-flags "<flags>"` → append flags to non-interactive installs
 
-**Examples:**
+Example:
 
 ```bash
-# Install everything from your config
-pm-auto install
-
-# Install specific packages to all presets
-pm-auto install vite next
-
-# Install from existing package.json
-pm-auto install --pkg-json
-
-# Preview what would be installed
-pm-auto install --dry-run
-
-# Add custom flags for non interactive commands(e.g., for peer dependency issues)
-pm-auto install vite --add-command "--legacy-peer-deps"
+pm-auto install example --dry-run
 ```
+
+---
 
 ### `pm-auto uninstall`
 
-Remove packages from configured presets.
+Uninstall packages defined in presets.
 
 ```bash
-pm-auto uninstall|u|remove [options] <packages...>
+pm-auto uninstall example
 ```
 
-**Options:**
+Use `--dry-run` to preview.
 
-- `-D, --dry-run` - Preview uninstall commands without executing them
-- `-h, --help` - Display help
+---
 
-**Examples:**
+### `pm-auto list`
+
+List all presets in your config.
 
 ```bash
-# Uninstall single package
-pm-auto uninstall vite
-
-# Uninstall multiple packages
-pm-auto uninstall vite next
-
-# Dryrun uninstall for non interactive commands
-pm-auto uninstall vite --dry-run
+pm-auto list
 ```
+
+---
+
+### `pm-auto describe`
+
+Show details about a specific preset.
+
+```bash
+pm-auto describe example
+```
+
+---
 
 ### `pm-auto config`
 
-Set the path to your configuration file.
+Set or update the config file path.
 
 ```bash
-pm-auto config <path>
+pm-auto config ./relative/path/to/config.json
 ```
 
-**Examples:**
+---
 
-```bash
-# Set config with relative path
-pm-auto config ./pm-auto-config.json
-
-```
-
-**Note:** The config path is stored persistently. If you move your config file, run `pm-auto config <new-path>` again.
-
-### `pm-auto list`
-List all packages from the config file
-```bash
-pm-auto list|ls
-```
-**Options:**
-
-- `-D, --desc <command>` - Display packages description
-- `-h, --help` - Display help
-
-**Examples:**
-
-```bash
-# List all presets
-pm-auto list
-
-```
-
-### `pm-auto describe`
-Display description of the package
-```bash
-pm-auto describe <package-name>
-```
-**Options:**
-
-- `-h, --help` - Display help
-
-**Examples:**
-
-```bash
-# List all presets
-pm-auto describe vite
-
-```
 ### `pm-auto config-path`
 
-Display path to the config file
-```bash
-pm-auto config-path|cp
-```
-**Options:**
-
-- `-h, --help` - Display help
-
-**Examples:**
+Show the currently active config path.
 
 ```bash
-# List all presets
 pm-auto config-path
-
 ```
 
+---
 
 ## Configuration
 
-Create a JSON config file to define your tech stack presets.
+PM-Auto uses a JSON config file to define **presets**.
 
-### Config Structure
+When you run:
+
+```bash
+pm-auto config ./config.json
+```
+
+PM-Auto will **automatically prepend an example preset** to the file whether it’s empty or not. This is intentional — the example acts as inline documentation so you immediately see how presets are structured.
+
+You are expected to **edit or delete the example** once you understand it.
+
+---
+
+### Full Config Structure (All Options)
 
 ```json
 {
-  "Key": {
-    "name": "preset-name",
-    "description": "Description of the preset",
-    "packageManager": "npm",
+  "example": {
+    "presetName": "example",
+    "description": "A sample configuration demonstrating all options for PM-Auto",
+    "packageManager": "bun",
     "packages": [
       {
-        "command": "package-name",
-        "interactive": false
+        "command": "create-next-app",
+        "interactive": true,
+        "dev": false,
+        "version": "latest",
+        "flags": ["."]
+      },
+      {
+        "command": "shadcn",
+        "interactive": true,
+        "dev": false,
+        "version": "latest",
+        "flags": ["init"]
+      },
+      {
+        "command": "gsap",
+        "interactive": false,
+        "dev": false,
+        "version": "3.11.4",
+        "flags": ["--peer-deps"]
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false,
+        "dev": false
+      },
+      {
+        "command": "clsx",
+        "interactive": false,
+        "dev": false
+      },
+      {
+        "command": "@types/three",
+        "interactive": false,
+        "dev": true
       }
     ]
   }
 }
 ```
 
-### Config Fields
-- **`Key`** - Identifier for the preset (it can be anything)
-- **`name`** - The preset name (should be simple for easy remembrance)
-- **`description`** - Description of the preset
-- **`packageManager`** - Package manager to use: `npm`, `yarn`, or `pnpm`
-- **`packages`** - Array of package configurations
-  - **`command`** - Package name(s) and flags (e.g., `lodash`, `typescript --save-dev`, `react react-dom`)
-  - **`interactive`** - Set to `true` for commands requiring user input (e.g., `create-vite@latest my-app`, `create-next-app@latest`)
+---
 
-### Real-World Examples
+### Config Fields Explained (Plain English)
 
-**Full-Stack TypeScript Setup:**
+#### Preset Level
 
-```json
-{
-  "fullstack-ts": {
-    "name": "fullstack-ts",
-    "description": "Full-stack TypeScript setup with Express and TypeScript",
-    "packageManager": "npm",
-    "packages": [
-      {
-        "command": "typescript ts-node --save-dev",
-        "interactive": false
-      },
-      {
-        "command": "@types/node --save-dev",
-        "interactive": false
-      },
-      {
-        "command": "express dotenv cors helmet",
-        "interactive": false
-      },
-      {
-        "command": "@types/express --save-dev",
-        "interactive": false
-      }
-    ]
-  }
-}
+* **`example`** → internal key (can be anything)
+* **`presetName`** → name you pass to the CLI (`pm-auto install example`)
+* **`description`** → shown in `list` and `describe`
+* **`packageManager`** → `npm`, `pnpm`, `yarn`, or `bun`
+* **`packages`** → ordered list of install commands
+
+#### Package Level
+
+Each entry in `packages` represents **one install command**.
+
+* **`command`** → package or tool name
+* **`interactive`** → `true` if the command prompts for input
+* **`dev`** → install as dev dependency
+* **`version`** → exact version (`"3.11.4"`, `"latest"`, or omitted)
+* **`flags`** → extra CLI flags or arguments
+
+PM-Auto builds the final command for you.
+
+Example output:
+
+```bash
+npm install gsap@3.11.4 -D
 ```
 
-**Three.js + React Project:**
+---
+
+## Real Examples
+
+### Three.js + React
 
 ```json
 {
   "threejs-react": {
     "name": "threejs-react",
-    "description": "Three.js + React project setup",
+    "description": "Three.js + React setup",
     "packageManager": "pnpm",
     "packages": [
-      {
-        "command": "three @react-three/fiber @react-three/drei",
-        "interactive": false
-      },
-      {
-        "command": "@types/three --save-dev",
-        "interactive": false
-      },
-      {
-        "command": "gsap leva",
-        "interactive": false
-      }
+      { "command": "three @react-three/fiber @react-three/drei", "interactive": false },
+      { "command": "@types/three --save-dev", "interactive": false },
+      { "command": "gsap leva", "interactive": false }
     ]
   }
 }
 ```
 
-**Interactive commands:**
-Set `"interactive": true` for commands that require user input during installation, such as:
+## Full‑Stack TypeScript
 
-- `create-next-app@latest my-app`
-- `create-vite@latest my-project`
-- `create-react-app my-app`
+```json
+{
+  "fullstack-ts": {
+    "name": "fullstack-ts",
+    "description": "Express + TypeScript backend",
+    "packageManager": "npm",
+    "packages": [
+      { "command": "typescript ts-node --save-dev", "interactive": false },
+      { "command": "@types/node --save-dev", "interactive": false },
+      { "command": "express dotenv cors helmet", "interactive": false }
+    ]
+  }
+}
+```
 
-### Config Tips
+---
 
-1. **Group related packages** - Combine packages that are always installed together in one command (e.g., `react react-dom gsap`)
-2. **Use descriptive names** - Name presets by purpose: `api-starter`, `frontend-base`, `testing-setup`
-3. **Multiple presets** - Create different presets for different project types in the same config
-4. **Version control** - Commit your config file to share stacks across your team
+## Best Practices
 
-## Global Options
+* Group packages you always install together
+* Keep preset names short (`vite`, `next`, `api`)
 
-- `-V, --version` - Show PM-Auto version
-- `-h, --help` - Display help
+---
 
-## Use Cases
+## Common Issues
 
-### Quick Project Setup
+**Nothing installs**
 
-Start new projects with your preferred stack instantly, no setup scripts needed.
+* Check config path: `pm-auto config-path`
+* Validate JSON formatting
 
-### Team Consistency
+**Command hangs**
 
-Share your config file with teammates so everyone uses the same packages and versions.
+* You forgot `"interactive": true`
 
-### Testing Compatibility
+**Wrong package manager**
 
-Quickly test if your package works across different package managers.
+* Double-check `packageManager` field
 
-### Learning & Experimentation
-
-Save configs for different frameworks you're learning—switch between stacks effortlessly.
+---
 
 ## Requirements
 
-- Node.js 14.0.0 or higher
-- npm, yarn, or pnpm installed
+* Node.js 14+
+* npm, pnpm, yarn 2+, or bun
 
-## Troubleshooting
+---
 
-**Config not found:**
-
-- Verify the config path is correct: `pm-auto config ./your-config.json`
-- Use absolute paths if relative paths aren't working
-- Ensure the config file is valid JSON
-
-**Packages not installing:**
-
-- Run with `--dry-run` to preview commands
-- Check that package names are spelled correctly
-- Verify your package manager is installed and accessible
-
-**Interactive commands hanging:**
-
-- Set `"interactive": true` for commands like `create-vite@latest`
-- These commands will prompt for user input during installation
-
-## Contributing
-
-We welcome contributions! Here's how:
-
-1. **Fork & clone:**
-
-   ```bash
-   git clone https://github.com/Ellydev0/pm-auto.git
-   cd pm-auto
-   npm install
-   ```
-
-2. **Create a branch:**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Make changes:**
-   - Write clean, readable code
-   - Follow existing conventions
-
-4. **Commit with conventional format:**
-   ```bash
-   git commit -m "feat: add your feature"
-   ```
-
-   - `feat:` - New features
-   - `fix:` - Bug fixes
-   - `docs:` - Documentation
-   - `refactor:` - Code refactoring
-   - `test:` - Tests
-   - `chore:` - Maintenance
-
-5. **Push & open PR:**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-### Reporting Issues
-
-Found a bug? Have a suggestion?
-
-1. Check if the issue already exists
-2. Create a new issue with:
-   - Clear description
-   - Steps to reproduce (for bugs)
-   - Expected vs. actual behavior
-   - Environment (OS, Node version, package manager)
-
-## Contributors
-
-Thank you to all the contributors who have helped make PM-Auto exist! 🎉
-<!-- ALL-CONTRIBUTORS-LIST:START -->
-[Elliot Otoijagha](https://github.com/Ellydev0)
-
-[Triumph Aidenojie](https://github.com/WebsTechne)
-
-
-Want to see your name here? Check out our [Contributing](#contributing) section!
-
-**Save time. Code more.** Get started with PM-Auto today! 🚀
+If you set up projects more than twice, it’s already worth it.
