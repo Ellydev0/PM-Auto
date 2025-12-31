@@ -9,10 +9,10 @@ const EXAMPLE_CONFIG_TEXT = `{
   "example": {
     "presetName": "example",
     "description": "A sample configuration demonstrating all options for PM-Auto",
-    "packageManager": "pnpm",
+    "packageManager": "bun",
     "packages": [
       {
-        "command": "vite",
+        "command": "create-next-app",
         "interactive": true,
         "dev": false,
         "version": "latest",
@@ -22,7 +22,8 @@ const EXAMPLE_CONFIG_TEXT = `{
         "command": "shadcn",
         "interactive": true,
         "dev": false,
-        "version": "latest"
+        "version": "latest",
+        "flags": ["init"]
       },
       {
         "command": "gsap",
@@ -34,14 +35,17 @@ const EXAMPLE_CONFIG_TEXT = `{
       {
         "command": "@react-three/fiber",
         "interactive": false,
-        "dev": true,
-        "version": "1.0.0",
-        "flags": []
+        "dev": false
       },
       {
         "command": "clsx",
         "interactive": false,
         "dev": false
+      },
+      {
+        "command": "@types/three",
+        "interactive": false,
+        "dev": true
       }
     ]
   }

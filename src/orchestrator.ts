@@ -31,7 +31,7 @@ export const orchestrator = (
       await runCommands(commands);
       outro("Done!");
       const end = performance.now();
-      display(`Installation took ${end - start}ms`, "info");
+      display(`Installation took ${Math.round((end - start) / 1000)}s`, "info");
       display("Packages installed successfully", "success");
     });
   } else {

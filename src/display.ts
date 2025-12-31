@@ -22,6 +22,7 @@ export const display = (text: string, type: DisplayType) => {
       break;
 
     case "loading":
+      log.info(chalk.blue(text));
       s.start(text);
       return s; // Return spinner so it can be stopped later
 
