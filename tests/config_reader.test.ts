@@ -1,10 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs/promises";
-import * as fsd from "fs";
 import { display } from "../src/display.js";
 import { getConfigObject } from "../src/config_reader.js";
 import { getConfigPath } from "../src/config_path.js";
-import type { CommandResult, ConfigType } from "../src/types/index.js";
+import type { ConfigType } from "../src/types/index.js";
 import * as clack from "@clack/prompts";
 
 vi.mock("fs/promises");
@@ -69,6 +68,17 @@ describe("get Config Object", () => {
     expect(display).toHaveBeenCalledWith(
       expect.stringContaining("Package 'next' not found in config"),
       "warning",
+    );
+  });
+
+  it("should display an error on invalid config file format", async () => {
+    vi.mocked(getConfigPath).mockReturnValue("/mock/config.json");
+    vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify({ name: "help" }));
+
+    await getConfigObject(["react"], {});
+    expect(display).toHaveBeenCalledWith(
+      expect.stringContaining("Invalid config file format"),
+      "error",
     );
   });
 

@@ -8,10 +8,25 @@ import { confirm, isCancel, cancel } from "@clack/prompts";
  * Gets the required packages from the config file, transforms into a js object and with the options given
  * it modifies the object and returns it
  */
+
+//Check if the value is an array of ConfigType objects
+function isConfigTypeArray(value: unknown): value is ConfigType[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        "packages" in item &&
+        Array.isArray((item as any).packages),
+    )
+  );
+}
+
 export const getConfigObject = async (
   packages: string[],
   options?: any,
-): Promise<ConfigType[] | CommandResult[]> => {
+): Promise<ConfigType[]> => {
   const configPath = getConfigPath();
 
   //read config file content
@@ -26,10 +41,17 @@ export const getConfigObject = async (
   }
 
   const configObject = JSON.parse(configContent);
-  let result: ConfigType[] = Object.values(configObject);
+
+  let result: ConfigType[] = [];
+
+  if (isConfigTypeArray(Object.values(configObject))) {
+    result = Object.values(configObject);
+  } else {
+    display("Invalid config file format", "error");
+  }
 
   //filter the packages the user wants to install
-  if (packages.length > 0) {
+  if (packages.length > 0 && result.length > 0) {
     result = packages
       .map((pkgName) => {
         const found = result.find((pkg) => pkg.presetName === pkgName);

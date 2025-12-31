@@ -8,20 +8,6 @@ import { runCommands } from "./run_commands.js";
 import type { ConfigType } from "./types/index.js";
 import { outro } from "@clack/prompts";
 
-//Check if the value is an array of ConfigType objects
-function isConfigTypeArray(value: unknown): value is ConfigType[] {
-  return (
-    Array.isArray(value) &&
-    value.every(
-      (item) =>
-        typeof item === "object" &&
-        item !== null &&
-        "packages" in item &&
-        Array.isArray((item as any).packages),
-    )
-  );
-}
-
 //Controls installation and uninstallation of packages
 export const orchestrator = (
   command: string,
@@ -30,28 +16,23 @@ export const orchestrator = (
 ) => {
   if (command === "install") {
     display(
-      `Installing packages... ${options.pkgJson ? "from package.json" : (packages as string[]).join(", ")}`,
+      `Installing packages... ${(packages as string[]).join(", ")}`,
       "info",
     );
-
+    const start = performance.now();
     getConfigObject(packages, options).then(async (config) => {
       if (config.length === 0) {
         display("No configuration found", "error");
         return;
       }
 
-      if (isConfigTypeArray(config)) {
-        const commands = buildInstallCommands(config);
+      const commands = buildInstallCommands(config);
 
-        await runCommands(commands);
-        outro("Done!");
-
-        display("Packages installed successfully", "success");
-      } else {
-        await runCommands(config);
-        outro("Done!");
-        display("Packages from package.json installed successfully", "success");
-      }
+      await runCommands(commands);
+      outro("Done!");
+      const end = performance.now();
+      display(`Installation took ${end - start}ms`, "info");
+      display("Packages installed successfully", "success");
     });
   } else {
     display(
@@ -59,19 +40,19 @@ export const orchestrator = (
       "info",
     );
 
+    const start = performance.now();
     getConfigObject(packages, options).then(async (config) => {
       if (config.length === 0) {
         display("No configuration found", "error");
         return;
       }
 
-      if (isConfigTypeArray(config)) {
-        const commands = buildUninstallCommands(config);
-        await runCommands(commands);
-        outro("Done!");
-
-        display("Packages uninstalled successfully", "success");
-      }
+      const commands = buildUninstallCommands(config);
+      await runCommands(commands);
+      outro("Done!");
+      const end = performance.now();
+      display(`Uninstallation took ${end - start}ms`, "info");
+      display("Packages uninstalled successfully", "success");
     });
   }
 };
