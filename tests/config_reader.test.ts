@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs/promises";
 import * as fsd from "fs";
-import * as path from "path";
 import { display } from "../src/display.js";
 import { detectPackageManager, getConfigObject } from "../src/config_reader.js";
 import { getConfigPath } from "../src/config_path.js";
@@ -19,6 +18,7 @@ describe("detect package manager", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
+
   it("should detects pnpm from lock file", () => {
     vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
       filePath.toString().includes("pnpm-lock.yaml"),
@@ -35,6 +35,7 @@ describe("detect package manager", () => {
 
     expect(result).toBe("yarn");
   });
+
   it("should detects npm from lock file", () => {
     vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
       filePath.toString().includes("package-lock.json"),
@@ -43,6 +44,22 @@ describe("detect package manager", () => {
 
     expect(result).toBe("npm");
   });
+
+  it("should detects bun from lock file", () => {
+    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
+      filePath.toString().includes("bun.lock"),
+    );
+    const result = detectPackageManager("/test/path");
+
+    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
+      filePath.toString().includes("bun.lockb"),
+    );
+    const result2 = detectPackageManager("/test/path");
+
+    expect(result).toBe("bun");
+    expect(result2).toBe("bun");
+  });
+
   it("should display error message when no lock file found", () => {
     vi.mocked(fsd.existsSync).mockImplementation(() => false);
     const result = detectPackageManager("/test/path");
@@ -56,14 +73,24 @@ describe("detect package manager", () => {
 });
 
 describe("get Config Object", () => {
-  const mockConfig = {
+  const mockConfig: Record<string, ConfigType> = {
     react: {
-      name: "react",
-      packages: [{ command: "npm install react", interactive: false }],
+      presetName: "react",
+      packageManager: "pnpm",
+      packages: [
+        {
+          command: "npm install react",
+          interactive: false,
+          flags: ["--peers-deps"],
+        },
+      ],
     },
     vue: {
-      name: "vue",
-      packages: [{ command: "npm install vue", interactive: false }],
+      presetName: "vue",
+      packageManager: "npm",
+      packages: [
+        { command: "npm install vue", interactive: false, version: "latest" },
+      ],
     },
   };
 
@@ -79,14 +106,24 @@ describe("get Config Object", () => {
 
     expect(config).toEqual([
       {
-        name: "react",
-        packages: [{ command: "npm install react", interactive: false }],
+        presetName: "react",
+        packageManager: "pnpm",
+        packages: [
+          {
+            command: "npm install react",
+            interactive: false,
+            flags: ["--peers-deps"],
+          },
+        ],
       },
       {
-        name: "vue",
-        packages: [{ command: "npm install vue", interactive: false }],
+        presetName: "vue",
+        packageManager: "npm",
+        packages: [
+          { command: "npm install vue", interactive: false, version: "latest" },
+        ],
       },
-    ]);
+    ] as ConfigType[]);
     expect(display).toHaveBeenCalledWith(
       expect.stringContaining("Package 'next' not found in config"),
       "warning",
@@ -94,26 +131,25 @@ describe("get Config Object", () => {
   });
 
   // it("should display an error on readFile error", async () => {
-  //   vi.mocked(getConfigPath).mockReturnValue("/path/to/test");
-  //   vi.mocked(fs.readFile).mockRejectedValue(new Error("File not found"));
-  //   await getConfigObject([], {});
+  //   vi.mocked(getConfigPath).mockReturnValue("/");
+  //   vi.mocked(fs.readFile).mockRejectedValue("File not found");
+  //   await getConfigObject(["react"], {});
   //   expect(display).toHaveBeenCalledWith(
-  //     expect.stringContaining("Try updating the config file"),
+  //     expect.stringContaining("Try updating the config file path"),
   //     "error",
   //   );
   // });
-  //
 
-  it("adds command with addCommand option", async () => {
+  it("adds flags with addFlags option", async () => {
     vi.mocked(getConfigPath).mockReturnValue("/mock/config.json");
     vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockConfig));
 
     const result = (await getConfigObject(["react"], {
-      addCommand: "--save-dev",
+      addFlags: "--force",
     })) as ConfigType[];
 
-    if (result[0]?.packages[0]?.command) {
-      expect(result[0].packages[0].command).toContain("--save-dev");
+    if (result[0]?.packages[0]?.flags) {
+      expect(result[0].packages[0].flags).toContain("--force");
     }
   });
 
@@ -157,11 +193,11 @@ describe("get Config Object", () => {
 
     expect(result).toEqual([
       {
-        name: "package.json",
+        presetName: "package.json",
         interactive: [],
         nonInteractive: ["npm install"],
       },
-    ]);
+    ] as CommandResult[]);
   });
 
   it("uses correct package manager for package.json", async () => {

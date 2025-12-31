@@ -26,13 +26,13 @@ async function runCommand(command: string, interactive: boolean = false) {
 }
 
 /**
- * Install all commands
+ * Run all commands
  */
-export async function install(commands: CommandResult[]) {
+export async function runCommands(commands: CommandResult[]) {
   try {
     for (const command of commands) {
       // Wait for all interactive commands to finish first
-      if (command.interactive) {
+      if (command.interactive.length > 0) {
         for (const interactiveCommand of command.interactive) {
           display(`Running interactive command: ${interactiveCommand}`, "info");
           await runCommand(interactiveCommand, true);

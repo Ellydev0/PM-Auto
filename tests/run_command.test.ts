@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { execa } from "execa";
-import { install } from "../src/install.js";
+import { runCommands } from "../src/run_commands.js";
 import * as display from "../src/display.js";
 import type { CommandResult } from "../src/types/index.js";
 
@@ -8,7 +8,7 @@ import type { CommandResult } from "../src/types/index.js";
 vi.mock("execa");
 vi.mock("../src/display.js");
 
-describe("install", () => {
+describe("runCommands", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -16,7 +16,7 @@ describe("install", () => {
   it("runs interactive commands with inherit stdio", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: ["npm init"],
         nonInteractive: [],
       },
@@ -24,7 +24,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(execa).toHaveBeenCalledWith("npm", ["init"], { stdio: "inherit" });
     expect(display.display).toHaveBeenCalledWith(expect.any(String), "info");
@@ -33,18 +33,18 @@ describe("install", () => {
   it("runs non-interactive commands with loading display", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: [],
-        nonInteractive: ["npm install react"],
+        nonInteractive: ["npm install react -D"],
       },
     ];
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(display.display).toHaveBeenCalledWith(expect.any(String), "loading");
-    expect(execa).toHaveBeenCalledWith("npm", ["install", "react"], {
+    expect(execa).toHaveBeenCalledWith("npm", ["install", "react", "-D"], {
       stdio: "inherit",
     });
   });
@@ -52,7 +52,7 @@ describe("install", () => {
   it("runs interactive commands before non-interactive", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: ["npm init"],
         nonInteractive: ["npm install"],
       },
@@ -60,7 +60,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     // Check interactive was called first
     expect(execa).toHaveBeenNthCalledWith(1, "npm", ["init"], {
@@ -74,7 +74,7 @@ describe("install", () => {
   it("handles multiple interactive commands sequentially", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: ["npm init", "npx create-app"],
         nonInteractive: [],
       },
@@ -82,7 +82,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(execa).toHaveBeenCalledTimes(2);
     expect(execa).toHaveBeenNthCalledWith(1, "npm", ["init"], {
@@ -96,7 +96,7 @@ describe("install", () => {
   it("handles command execution errors with stdout", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: [],
         nonInteractive: ["npm install"],
       },
@@ -108,7 +108,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockRejectedValue(error);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(display.display).toHaveBeenCalledWith("stdout output", "");
     expect(display.display).toHaveBeenCalledWith("stderr output", "error");
@@ -121,7 +121,7 @@ describe("install", () => {
   it("handles command execution errors without stdout/stderr", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: [],
         nonInteractive: ["npm install"],
       },
@@ -129,7 +129,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockRejectedValue(new Error("Command failed"));
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(display.display).toHaveBeenCalledWith(
       expect.stringContaining("Command failed"),
@@ -140,12 +140,12 @@ describe("install", () => {
   it("processes multiple CommandResult items in sequence", async () => {
     const commands: CommandResult[] = [
       {
-        name: "react",
+        presetName: "react",
         interactive: [],
         nonInteractive: ["npm install react"],
       },
       {
-        name: "vue",
+        presetName: "vue",
         interactive: [],
         nonInteractive: ["npm install vue"],
       },
@@ -153,7 +153,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(execa).toHaveBeenCalledTimes(2);
     expect(execa).toHaveBeenCalledWith("npm", ["install", "react"], {
@@ -167,13 +167,13 @@ describe("install", () => {
   it("handles empty command arrays", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: [],
         nonInteractive: [],
       },
     ];
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(execa).not.toHaveBeenCalled();
   });
@@ -181,7 +181,7 @@ describe("install", () => {
   it("splits command string correctly with multiple args", async () => {
     const commands: CommandResult[] = [
       {
-        name: "test",
+        presetName: "test",
         interactive: [],
         nonInteractive: ["npm install react --save-dev"],
       },
@@ -189,7 +189,7 @@ describe("install", () => {
 
     vi.mocked(execa).mockResolvedValue({} as any);
 
-    await install(commands);
+    await runCommands(commands);
 
     expect(execa).toHaveBeenCalledWith(
       "npm",

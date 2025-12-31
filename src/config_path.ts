@@ -5,9 +5,66 @@ import { display } from "./display.js";
 
 const SETTINGS_DIR = path.join(os.homedir(), ".pm-auto");
 const SETTINGS_FILE = path.join(SETTINGS_DIR, "settings.json");
+const EXAMPLE_CONFIG_TEXT = `{
+  "example": {
+    "presetName": "example",
+    "description": "A sample configuration demonstrating all options for PM-Auto",
+    "packageManager": "pnpm",
+    "packages": [
+      {
+        "command": "vite",
+        "interactive": true,
+        "dev": false,
+        "version": "latest",
+        "flags": ["."]
+      },
+      {
+        "command": "shadcn",
+        "interactive": true,
+        "dev": false,
+        "version": "latest"
+      },
+      {
+        "command": "gsap",
+        "interactive": false,
+        "dev": false,
+        "version": "3.11.4",
+        "flags": ["--peer-deps"]
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false,
+        "dev": true,
+        "version": "1.0.0",
+        "flags": []
+      },
+      {
+        "command": "clsx",
+        "interactive": false,
+        "dev": false
+      }
+    ]
+  }
+}
+`;
 
 interface Settings {
   configPath?: string;
+}
+
+export function prependToFile(filePath: string, text: string) {
+  display(`Prepending to example to file: ${filePath}`, "info");
+
+  // Read old content if file exists
+  const oldContent = fs.existsSync(filePath)
+    ? fs.readFileSync(filePath, "utf8")
+    : "";
+
+  // Write new content at the top
+  if (!oldContent.includes(text)) {
+    fs.writeFileSync(filePath, text + oldContent, "utf8");
+  }
+  display(`Example prepended successfully: ${filePath}`, "success");
 }
 
 export function saveConfigPath(configPath: string): void {
@@ -16,13 +73,13 @@ export function saveConfigPath(configPath: string): void {
     fs.mkdirSync(SETTINGS_DIR, { recursive: true });
   }
 
-  //check if file exists
   try {
     const real = fs.realpathSync(configPath);
     const settings: Settings = { configPath: real };
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2));
 
-    display(`Config file path saved: ${configPath}`, "success");
+    display(`Config file path saved: ${configPath}`, "info");
+    prependToFile(real, EXAMPLE_CONFIG_TEXT);
   } catch (err: any) {
     display(`Error saving config file: ${err.message}`, "error");
   }

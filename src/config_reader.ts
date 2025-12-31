@@ -7,7 +7,7 @@ import type { CommandResult, ConfigType } from "./types/index.js";
 import { display } from "./display.js";
 import { confirm, isCancel, cancel } from "@clack/prompts";
 
-type PackageManager = "npm" | "yarn" | "pnpm";
+type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
 
 /**
  * Detect the package manager used in the project.
@@ -27,6 +27,13 @@ export function detectPackageManager(
 
   if (fsd.existsSync(path.join(projectPath, "package-lock.json"))) {
     return "npm";
+  }
+
+  if (
+    fsd.existsSync(path.join(projectPath, "bun.lockb")) ||
+    fsd.existsSync(path.join(projectPath, "bun.lock"))
+  ) {
+    return "bun";
   }
 
   // Default to npm if no lock file found
@@ -62,7 +69,7 @@ export const getConfigObject = async (
     if (packages.length > 0) {
       result = packages
         .map((pkgName) => {
-          const found = result.find((pkg) => pkg.name === pkgName);
+          const found = result.find((pkg) => pkg.presetName === pkgName);
           if (!found) {
             display(`Package '${pkgName}' not found in config`, "warning");
           }
@@ -74,13 +81,15 @@ export const getConfigObject = async (
     /*
      * Config object modification with the options given
      */
-    //Add command to previous configured commands (-A/-add-command)
-    if (options.addCommand) {
+    //Add flags to previous configured flags (-A/-add-flags)
+    if (options.addFlags) {
       result.forEach((config) => {
         config.packages.forEach((pkg) => {
-          pkg.command = pkg.interactive
-            ? pkg.command
-            : pkg.command + " " + options.addCommand;
+          if (pkg.flags) {
+            pkg.flags.push(pkg.interactive ? "" : options.addFlags);
+          } else {
+            pkg.flags = [pkg.interactive ? "" : options.addFlags];
+          }
         });
       });
     }
@@ -89,7 +98,7 @@ export const getConfigObject = async (
     if (options.dryRun) {
       display("Dry Run:", "info");
       result.forEach((config) => {
-        display(`Package name -> ${config.name}`, "info");
+        display(`Package name -> ${config.presetName}`, "info");
         config.packages.forEach((pkg) => {
           display(`running ${pkg.command}`, "info");
         });
@@ -119,7 +128,7 @@ export const getConfigObject = async (
 
     const result: CommandResult[] = [
       {
-        name: "package.json",
+        presetName: "package.json",
         interactive: [],
         nonInteractive: [command],
       },
@@ -176,7 +185,7 @@ export const getPackageDescription = async (packageName: string) => {
   const configObjectArray: ConfigType[] = Object.values(configObject);
 
   configObjectArray.forEach((configObject) => {
-    if (configObject.name === packageName) {
+    if (configObject.presetName === packageName) {
       const description = !configObject.description
         ? "No description"
         : configObject.description;

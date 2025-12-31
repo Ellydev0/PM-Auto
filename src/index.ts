@@ -33,8 +33,8 @@ program
   )
   .option("-p, --pkg-json", "Install packages from package.json")
   .option(
-    "-A, --add-command <command>",
-    "Add a custom command to all installation commands from config file",
+    "-A, --add-flags <flags>",
+    "Add custom flags to already defined flags from config file",
   )
   .option("-D, --dry-run", "Dry run - Display commands before execution")
   .action((packages, options) => {

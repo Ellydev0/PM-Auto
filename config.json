@@ -1,0 +1,41 @@
+{
+  "example": {
+    "presetName": "example",
+    "description": "A sample configuration demonstrating all options for PM-Auto",
+    "packageManager": "pnpm",
+    "packages": [
+      {
+        "command": "vite",
+        "interactive": true,
+        "dev": false,
+        "version": "latest",
+        "flags": ["."]
+      },
+      {
+        "command": "shadcn",
+        "interactive": true,
+        "dev": false,
+        "version": "latest"
+      },
+      {
+        "command": "gsap",
+        "interactive": false,
+        "dev": false,
+        "version": "3.11.4",
+        "flags": ["--peer-deps"]
+      },
+      {
+        "command": "@react-three/fiber",
+        "interactive": false,
+        "dev": true,
+        "version": "1.0.0",
+        "flags": []
+      },
+      {
+        "command": "clsx",
+        "interactive": false,
+        "dev": false
+      }
+    ]
+  }
+}
