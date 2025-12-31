@@ -31,7 +31,6 @@ program
   .description(
     "Install packages using the detected package manager (Aliases: add, i)",
   )
-  .option("-p, --pkg-json", "Install packages from package.json")
   .option(
     "-A, --add-flags <flags>",
     "Add custom flags to already defined flags from config file",
@@ -60,12 +59,12 @@ program
   .command("list")
   .alias("ls")
   .description("List all packages from the config file")
-  .option("-D, --desc", "Display packages description", false)
+  .option("--desc", "Display packages description", false)
   .action((options) => {
     getConfigKeys(options);
   });
 
-//Displaying config details
+//Display a config description
 program
   .command("describe <package>")
   .alias("desc")

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs/promises";
 import * as fsd from "fs";
 import { display } from "../src/display.js";
-import { detectPackageManager, getConfigObject } from "../src/config_reader.js";
+import { getConfigObject } from "../src/config_reader.js";
 import { getConfigPath } from "../src/config_path.js";
 import type { CommandResult, ConfigType } from "../src/types/index.js";
 import * as clack from "@clack/prompts";
@@ -13,64 +13,6 @@ vi.mock("../src/config_path.js");
 vi.mock("../src/display.js");
 vi.mock("@clack/prompts");
 vi.mock("../src/config_path.js");
-
-describe("detect package manager", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
-  it("should detects pnpm from lock file", () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("pnpm-lock.yaml"),
-    );
-    const result = detectPackageManager("/test/path");
-
-    expect(result).toBe("pnpm");
-  });
-  it("should detects yarn from lock file", () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("yarn.lock"),
-    );
-    const result = detectPackageManager("/test/path");
-
-    expect(result).toBe("yarn");
-  });
-
-  it("should detects npm from lock file", () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("package-lock.json"),
-    );
-    const result = detectPackageManager("/test/path");
-
-    expect(result).toBe("npm");
-  });
-
-  it("should detects bun from lock file", () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("bun.lock"),
-    );
-    const result = detectPackageManager("/test/path");
-
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("bun.lockb"),
-    );
-    const result2 = detectPackageManager("/test/path");
-
-    expect(result).toBe("bun");
-    expect(result2).toBe("bun");
-  });
-
-  it("should display error message when no lock file found", () => {
-    vi.mocked(fsd.existsSync).mockImplementation(() => false);
-    const result = detectPackageManager("/test/path");
-
-    expect(display).toHaveBeenCalledWith(
-      expect.stringContaining("No Lock File Found"),
-      "error",
-    );
-    expect(result).toBeUndefined();
-  });
-});
 
 describe("get Config Object", () => {
   const mockConfig: Record<string, ConfigType> = {
@@ -182,34 +124,5 @@ describe("get Config Object", () => {
     expect(mockExit).toHaveBeenCalledWith(0);
 
     mockExit.mockRestore();
-  });
-
-  it("generates command for package.json install", async () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("package-lock.json"),
-    );
-
-    const result = await getConfigObject([], { pkgJson: true });
-
-    expect(result).toEqual([
-      {
-        presetName: "package.json",
-        interactive: [],
-        nonInteractive: ["npm install"],
-      },
-    ] as CommandResult[]);
-  });
-
-  it("uses correct package manager for package.json", async () => {
-    vi.mocked(fsd.existsSync).mockImplementation((filePath) =>
-      filePath.toString().includes("pnpm-lock.yaml"),
-    );
-
-    const result = (await getConfigObject([], {
-      pkgJson: true,
-    })) as CommandResult[];
-    if (result[0]) {
-      expect(result[0].nonInteractive[0]).toBe("pnpm install");
-    }
   });
 });
